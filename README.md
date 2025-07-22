@@ -70,3 +70,10 @@ SkyLimit busca ir más allá del simple registro de actividad, construyendo una 
     Creación de una comunidad enfocada en el bienestar integral
 
     Democratización del acceso a rutinas personalizadas mediante tecnología
+
+
+
+## 📄 Memoria del proyecto
+
+Puedes descargar la memoria completa del proyecto desde este enlace:  
+[Descargar Memoria SkyLimit (PDF)](https://drive.google.com/file/d/1D9bjyhW6tgHBdRSGxDxrHQT3bHjIbUti/view?usp=drive_link)
