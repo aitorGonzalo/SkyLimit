@@ -1,0 +1,132 @@
+{% extends 'social_base.html' %}
+{% load static %}
+{% block social_content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupos</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        main {
+            flex-grow: 1;
+        }
+
+        .container {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .card-grupo {
+            text-decoration: none;
+            color: inherit;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .card-grupo:hover {
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.05);
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .badge-unread {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff1133;
+            color: white;
+            font-size: 0.8rem;
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-weight: bold;
+        }
+
+        .search-button {
+            background-color: #c3b9e3;
+            border-radius: 50%;
+            border: none;
+            color: #FFF;
+            width: 45px;
+            height: 45px;
+            outline: 0;
+            position: relative;
+        }
+
+        .btn-grad-2 {
+            background-image: linear-gradient(to right, #4776E6 0%, #8E54E9 51%, #4776E6 100%);
+            margin: 10px;
+            padding: 10px 30px;
+            text-align: center;
+            text-transform: uppercase;
+            transition: 0.5s;
+            background-size: 200% auto;
+            color: white;
+            box-shadow: 0 0 20px #eee;
+            border-radius: 10px;
+            display: block;
+        }
+
+        .btn-grad-2:hover {
+            background-position: right center;
+            color: #fff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5 px-4 main-container" style="height: calc(100vh - 120px);">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text-center fw-bold">Grupos</h1>
+
+            <!-- Barra de búsqueda -->
+            <form method="GET" action="{% url 'listar_grupos' %}" class="d-flex w-50">
+                <input type="text" name="q" class="form-control rounded-pill py-2 shadow me-2" placeholder="Buscar grupos..." value="{{ request.GET.q }}">
+                <button type="submit" class="btn btn-primary search-button"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </form>
+
+            <a href="{% url 'crear_grupo' %}" class="btn btn-success btn-grad-2">Crear Nuevo Grupo</a>
+        </div>
+
+        <hr>
+
+        <!-- Contenedor de los grupos -->
+        <div class="row g-4">
+            {% if grupos_con_notificaciones %}
+                {% for item in grupos_con_notificaciones %}
+                    <div class="col-md-4">
+                        <a class="card text-center h-100 card-grupo" style="border-radius: 20px;" href="{% url 'detalles_grupo' item.grupo.id %}">
+                            {% if item.grupo.imagen %}
+                                <img src="{{ item.grupo.imagen.url }}" class="img-fluid card-img-top" style="object-fit: cover; height: 250px; width: 100%; border-radius: 20px 20px 0 0;">
+                            {% else %}
+                                <img src="{% static 'imgs/default-group.png' %}" class="img-fluid card-img-top" style="object-fit: cover; height: 250px; width: 100%; border-radius: 20px 20px 0 0;">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ item.grupo.nombre }}</h5>
+                                <p class="card-text">{{ item.grupo.descripcion|truncatewords:15 }}</p>
+                                {% if item.es_miembro and item.mensajes_no_leidos > 0 %}
+                                    <span class="badge bg-danger">{{ item.mensajes_no_leidos }}</span>
+                                {% endif %}
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center">No se encontraron grupos.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}

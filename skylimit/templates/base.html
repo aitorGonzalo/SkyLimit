@@ -1,0 +1,480 @@
+{% load static %}
+{% load socialaccount %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"> <!-- Incluye aquí tu CSS base -->
+    <title>{% block title %}SkyLimit{% endblock %}</title>
+</head>
+<body>
+   
+<div class="contenedor-header">
+    <header>
+        <h1>Sky<span>Limit</span></h1>
+        <!-- Botón de menú hamburguesa (se muestra solo en móviles) -->
+        <div class="nav-responsive" onclick="toggleMenu()">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+        <nav id="nav">
+            <a href="{% url 'home' %}#inicio">Inicio</a>
+            <a href="{% url 'home' %}#nosotros">Nosotros</a>
+            <a href="{% url 'home' %}#servicios">Servicios</a>
+            <a href="{% url 'home' %}#galeria">Galería</a>
+            <a href="{% url 'home' %}#equipo">Equipo</a>
+            <a href="{% url 'home' %}#contacto">Contacto</a>
+            {% if user.is_authenticated and user.entrenador and user.entrenador.aprobado_por_admin %}
+                <a href="{% url 'listar_solicitudes_entrenador' %}" class="nav-link position-relative">
+                    <i class="fa-solid fa-envelope"></i> <!-- Ícono de buzón -->
+                    {% with user.entrenador.solicitudes.count as total_solicitudes %}
+                        {% if total_solicitudes > 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ total_solicitudes }}
+                            </span>
+                        {% endif %}
+                    {% endwith %}
+                </a>
+            {% endif %}
+            {% if user.is_staff %}
+                <a href="{% url 'gestionar_entrenadores' %}" class="nav-link position-relative">
+                    <i class="fa-solid fa-envelope"></i> <!-- Ícono de buzón -->
+                    {% if solicitudes_pendientes > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ solicitudes_pendientes }}
+                        </span>
+                    {% endif %}
+
+                </a>
+            {% endif %}
+
+           
+            {% if user.is_authenticated %}
+                <a href="{% url 'ver_perfil' %}">
+                    <img src="{% if user.entrenador and user.entrenador.avatar %}{{ user.entrenador.avatar.url }}
+                            {% elif user.perfilusuario and user.perfilusuario.avatar %}{{ user.perfilusuario.avatar.url }}
+                            {% else %}{% static 'imgs/default-avatar.png' %}{% endif %}" 
+                        alt="Avatar" 
+                        class="rounded-circle" 
+                        style="width: 50px; height: 50px; object-fit: cover;">
+                </a>
+                <form action="{% url 'logout' %}" method="POST" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger text-white shadow-none">Log Out</button>
+                </form>
+            {% else %}
+                <button type="button" class="btn btn-danger text-white shadow-none" data-bs-toggle="modal" data-bs-target="#loginModal">
+                    Iniciar Sesión
+                </button>
+            {% endif %}
+           
+
+
+        </nav>
+        
+    </header>
+</div>
+
+
+
+    <!-- Contenido dinámico -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+
+    <!-- Footer -->
+    <footer>
+        <div class="info">
+            <p>&copy; 2025 SkyLimit. Todos los derechos reservados.</p>
+            <div class="redes">
+                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#"><i class="fa-brands fa-youtube"></i></a>
+            </div>
+        </div>
+    </footer>
+    <!-- Modal de Inicio de Sesión -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Encabezado del Modal -->
+            <div class="modal-header">
+                <h2 class="modal-title" id="loginModalLabel">Inicia Sesión</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <!-- Cuerpo del Modal -->
+            <div class="modal-body">
+                <!-- Mensajes de Error SOLO para el Login -->
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if 'login_usuario' in message.tags %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                <!-- Formulario -->
+                <form action="{% url 'login' %}" method="POST">
+                    {% csrf_token %}
+                    <!-- Campos del Formulario -->
+                    <div class="mb-3">
+                        <input type="text" name="username" class="form-control" placeholder="Usuario" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" name="password" class="form-control" placeholder="Contraseña" required>
+                    </div>
+
+                    <!-- Botones -->
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger text-white shadow-none">Entrar</button>
+                        
+                    </div>
+
+                    <a href="{% provider_login_url 'google' %}" class="btn btn-outline-danger rounded shadow w-100 mt-3">
+                        <i class="fab fa-google"></i> Iniciar sesión con Google
+                    </a>
+
+                </form>
+                <p class="text-center mt-3">
+                    ¿Aún no tienes cuenta? 
+                    <button type="button" class="btn btn-mas" id="openRegisterModal">Regístrate</button>                
+                </p>
+                <p class="text-center mt-3">
+                    ¿Quieres ser entrenador? 
+                    <button type="button" class="btn btn-mas" data-bs-target="#registerEntrenadorModal" data-bs-toggle="modal">Registrate como entrenador</button>
+                </p>
+               
+
+                
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal registro usuario -->
+<div class="modal fade" id="RegisterModal" tabindex="-1" aria-labelledby="RegisterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="RegisterModalLabel">Registrarte</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Mostrar mensajes de error -->
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if 'register' in message.tags %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                <!-- Formulario -->
+                <form action="{% url 'register' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Usuario</label>
+                        <input type="text" name="username" id="id_username" class="form-control" placeholder="Usuario" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Correo Electrónico</label>
+                        <input type="email" name="email" id="id_email" class="form-control" placeholder="Correo Electrónico" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_password1" class="form-label">Contraseña</label>
+                        <input type="password" name="password1" id="id_password1" class="form-control" placeholder="Contraseña" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_password2" class="form-label">Confirmar Contraseña</label>
+                        <input type="password" name="password2" id="id_password2" class="form-control" placeholder="Confirmar Contraseña" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_nombre" class="form-label">Nombre</label>
+                        <input type="text" name="nombre" id="id_nombre" class="form-control" placeholder="Tu Nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_apellidos" class="form-label">Apellidos</label>
+                        <input type="text" name="apellidos" id="id_apellidos" class="form-control" placeholder="Tus Apellidos" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_edad" class="form-label">Edad</label>
+                        <input type="number" name="edad" id="id_edad" class="form-control" placeholder="Tu Edad" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_genero" class="form-label">Género</label>
+                        <select name="genero" id="id_genero" class="form-control">
+                            <option value="Masculino">Masculino</option>
+                            <option value="Femenino">Femenino</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_descripcion" class="form-label">Descripción</label>
+                        <textarea name="descripcion" id="id_descripcion" class="form-control" placeholder="Escribe algo sobre ti..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_intereses" class="form-label">Intereses</label>
+                        <textarea name="intereses" id="id_intereses" class="form-control" placeholder="Escribe tus intereses aquí..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_nivel_experiencia" class="form-label">Nivel de Experiencia</label>
+                        <select name="nivel_experiencia" id="id_nivel_experiencia" class="form-control">
+                            <option value="Principiante">Principiante</option>
+                            <option value="Intermedio">Intermedio</option>
+                            <option value="Avanzado">Avanzado</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_metas" class="form-label">Metas</label>
+                        <textarea name="metas" id="id_metas" class="form-control" placeholder="Escribe tus metas aquí..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-danger w-100">Registrarte</button>
+                   
+                </form>
+                
+                <p class="text-center mt-3">
+                    ¿Ya tienes cuenta? 
+                    <button type="button" class="btn btn-mas" data-bs-target="#loginModal" data-bs-toggle="modal">Inicia sesión</button>                </p>
+                <p class="text-center mt-3">
+                    ¿Eres entrenador? 
+                    <button type="button" class="btn btn-mas" data-bs-target="#registerEntrenadorModal" data-bs-toggle="modal">Registrate como entrenador</button>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="registerEntrenadorModal" tabindex="-1" aria-labelledby="registerEntrenadorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="registerEntrenadorModalLabel">Regístrate como Entrenador</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Mostrar mensajes de error -->
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if 'trainer_error' in message.tags %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% elif 'trainer_success' in message.tags %}
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                <!-- Formulario -->
+                <form action="{% url 'registrar_entrenador' %}" method="POST">
+                    {% csrf_token %}
+                    <!-- Datos personales -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_nombre" class="form-label">Nombre</label>
+                            <input type="text" name="nombre" id="id_nombre" class="form-control" placeholder="Tu Nombre" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_apellidos" class="form-label">Apellidos</label>
+                            <input type="text" name="apellidos" id="id_apellidos" class="form-control" placeholder="Tus Apellidos" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_genero" class="form-label">Género</label>
+                            <select name="genero" id="id_genero" class="form-control">
+                                <option value="Masculino">Masculino</option>
+                                <option value="Femenino">Femenino</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_nivel_experiencia" class="form-label">Nivel de Experiencia</label>
+                            <select name="nivel_experiencia" id="id_nivel_experiencia" class="form-control">
+                                <option value="Principiante">Principiante</option>
+                                <option value="Intermedio">Intermedio</option>
+                                <option value="Avanzado">Avanzado</option>
+                            </select>
+                        </div>
+                    </div>
+                
+                    <!-- Datos de la cuenta -->
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Usuario</label>
+                        <input type="text" name="username" id="id_username" class="form-control" placeholder="Usuario" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Correo Electrónico</label>
+                        <input type="email" name="email" id="id_email" class="form-control" placeholder="Correo Electrónico" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">Contraseña</label>
+                        <input type="password" name="password" id="id_password" class="form-control" placeholder="Contraseña" required>
+                    </div>
+                
+                    <!-- Información del entrenador -->
+                    <h5 class="fw-bold mt-3">Información de Entrenador</h5>
+                    <div class="mb-3">
+                        <label for="id_especialidades" class="form-label">Especialidades</label>
+                        <textarea name="especialidades" id="id_especialidades" class="form-control" placeholder="Especialidades deportivas..." required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_experiencia" class="form-label">Experiencia</label>
+                        <textarea name="experiencia" id="id_experiencia" class="form-control" placeholder="Describe tu experiencia profesional..." required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_formacion" class="form-label">Formación</label>
+                        <textarea name="formacion" id="id_formacion" class="form-control" placeholder="Detalles de tu formación académica..." required></textarea>
+                    </div>
+                
+                    <!-- Botón para enviar -->
+                    <button type="submit" class="btn btn-danger w-100">Registrarse</button>
+                </form>
+                
+                <p class="text-center mt-3">
+                    ¿Ya tienes cuenta? 
+                    <button type="button" class="btn btn-mas" data-bs-target="#loginModal" data-bs-toggle="modal">Inicia sesión</button>
+                </p>
+                <p class="text-center mt-3">
+                    ¿Eres usuario? 
+                    <button type="button" class="btn btn-mas" data-bs-target="#RegisterModal" data-bs-toggle="modal">Regístrate como usuario</button>
+                </p>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Desplazarse automáticamente a la sección de contacto si se envió un mensaje o hubo un error
+        {% if scroll_to_contacto %}
+            const contactoSection = document.getElementById('contacto');
+            if (contactoSection) {
+                contactoSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        {% endif %}
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const loginModalElement = document.getElementById('loginModal');
+        const registerModalElement = document.getElementById('RegisterModal');
+        const registerEntrenadorModalElement = document.getElementById('registerEntrenadorModal');
+       
+
+        const loginModal = loginModalElement ? new bootstrap.Modal(loginModalElement) : null;
+        const registerModal = registerModalElement ? new bootstrap.Modal(registerModalElement) : null;
+        const registerEntrenadorModal = registerEntrenadorModalElement ? new bootstrap.Modal(registerEntrenadorModalElement) : null;
+       
+
+        // Mostrar modal basado en errores o variables de servidor
+        {% if show_register_entrenador_modal %}
+            registerEntrenadorModal?.show();
+        {% elif show_register_modal %}
+            registerModal?.show();
+        {% elif show_login_modal %}
+            loginModal?.show();
+        {% endif %}
+
+        {% if messages %}
+            let hasTrainerSuccess = false;
+            let hasRegisterError = false;
+            let hasTrainerRegisterError = false;
+
+            {% for message in messages %}
+                {% if 'register' in message.tags %}
+                    hasRegisterError = true;
+                {% elif 'trainer_success' in message.tags %}
+                    hasTrainerSuccess = true;
+                {% elif 'trainer_error' in message.tags %}
+                    hasTrainerRegisterError = true;
+                {% endif %}
+            {% endfor %}
+
+            if (hasTrainerSuccess) {
+                // Si el registro de entrenador es exitoso, mostrar el modal del entrenador con el mensaje correspondiente
+                registerEntrenadorModal?.show();
+            } else if (hasRegisterError && !hasTrainerRegisterError) {
+                // Si hay errores de registro de usuario
+                registerModal?.show();
+            } else if (hasTrainerRegisterError && !hasRegisterError) {
+                // Si hay errores de registro de entrenador
+                registerEntrenadorModal?.show();
+            }
+        {% endif %}
+
+
+        // Transiciones entre modales
+        const transitionModal = (currentModal, nextModal) => {
+            if (currentModal) {
+                currentModal.hide();
+                setTimeout(() => {
+                    nextModal?.show();
+                }, 300); // Ajuste de tiempo para la transición
+            } else {
+                nextModal?.show();
+            }
+        };
+
+        // Configuración de botones
+        document.getElementById('openRegisterModal')?.addEventListener('click', () => {
+            transitionModal(loginModal, registerModal);
+        });
+
+        document.querySelector("[data-bs-target='#registerEntrenadorModal']")?.addEventListener('click', () => {
+            transitionModal(registerModal, registerEntrenadorModal);
+        });
+
+        document.querySelector("[data-bs-target='#RegisterModal']")?.addEventListener('click', () => {
+            transitionModal(registerEntrenadorModal, registerModal);
+        });
+
+        // Limpieza al cerrar un modal
+        [loginModalElement, registerModalElement, registerEntrenadorModalElement].forEach((modalElement) => {
+            modalElement?.addEventListener("hidden.bs.modal", function () {
+                const errorMessages = modalElement.querySelectorAll('.alert');
+                errorMessages.forEach(alert => alert.remove());
+
+                const forms = modalElement.querySelectorAll("form");
+                forms.forEach(form => form.reset());
+            });
+        });
+    });
+    function toggleMenu() {
+        let nav = document.getElementById("nav");
+        nav.classList.toggle("responsive");
+    }
+
+    // Cerrar menú al hacer clic en un enlace
+    document.addEventListener("DOMContentLoaded", function () {
+        let navLinks = document.querySelectorAll("#nav a");
+        navLinks.forEach(link => {
+            link.addEventListener("click", function () {
+                let nav = document.getElementById("nav");
+                if (nav.classList.contains("responsive")) {
+                    nav.classList.remove("responsive");
+                }
+            });
+        });
+    });
+</script>
+    
+
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

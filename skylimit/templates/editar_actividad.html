@@ -1,0 +1,79 @@
+<style>
+    .scrollable-form {
+        max-height: 600px; /* Ajusta la altura máxima según tus necesidades */
+        overflow-y: auto;
+        padding-right: 10px; /* Espacio adicional para evitar que el scroll tape el contenido */
+    }
+</style>
+
+{% extends 'social_base.html' %}
+{% load static %}
+{% block social_content %}
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4>Editar Actividad</h4>
+        </div>
+        <div class="card-body scrollable-form">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group mb-3">
+                    <label for="nombre">Nombre de la Actividad</label>
+                    <input type="text" id="nombre" name="nombre" class="form-control" value="{{ actividad.nombre }}" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="descripcion">Descripción</label>
+                    <textarea id="descripcion" name="descripcion" class="form-control" rows="4" required>{{ actividad.descripcion }}</textarea>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="fecha_hora">Fecha y Hora</label>
+                    <input type="datetime-local" id="fecha_hora" name="fecha_hora" class="form-control" 
+                        value="{{ form.fecha_hora.value|default_if_none:actividad.fecha_hora|date:'Y-m-d\\TH:i' }}" required>
+                    {% if form.fecha_hora.errors %}
+                        <small class="text-danger">{{ form.fecha_hora.errors|join:", " }}</small>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="duracion_unidad">Unidad de Duración</label>
+                    <select id="duracion_unidad" name="duracion_unidad" class="form-control" required>
+                        <option value="seconds" {% if actividad.duracion_unidad == "seconds" %}selected{% endif %}>Segundos</option>
+                        <option value="minutes" {% if actividad.duracion_unidad == "minutes" %}selected{% endif %}>Minutos</option>
+                        <option value="hours" {% if actividad.duracion_unidad == "hours" %}selected{% endif %}>Horas</option>
+                    </select>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="duracion">Duración (en horas)</label>
+                    <input type="number" id="duracion" name="duracion_valor" 
+                        class="form-control" 
+                        value="{{ actividad.duracion_valor }}" 
+                        min="1" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="ubicacion">Ubicación</label>
+                    <input type="text" id="ubicacion" name="ubicacion" class="form-control" value="{{ actividad.ubicacion }}" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="limite_participantes">Límite de Participantes (opcional)</label>
+                    <input type="number" id="limite_participantes" name="limite_participantes" 
+                        class="form-control" 
+                        value="{{ actividad.limite_participantes }}">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="imagen">Imagen</label>
+                    {% if actividad.imagen %}
+                    <div class="mb-2">
+                        <img src="{{ actividad.imagen.url }}" alt="Imagen de la Actividad" class="img-fluid rounded" style="max-height: 200px;">
+                    </div>
+                    {% endif %}
+                    <input type="file" id="imagen" name="imagen" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                <a href="{% url 'detalles_actividad' actividad.id %}" class="btn btn-primary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

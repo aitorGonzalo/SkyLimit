@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Condiciones del Oleaje - SkyLimit{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column min-vh-100">
+    <main class="flex-grow-1 d-flex align-items-center justify-content-center">
+        <div class="weather-container text-center p-4 p-md-5">
+            <h2 class="display-4 fw-bold text-primary mb-4 animate__animated animate__fadeInDown">🌊 Condiciones del Oleaje</h2>
+
+            <h4 class="text-muted mb-4 animate__animated animate__fadeIn">
+                📍 {{ lugar }}
+            </h4>
+
+            {% if wave_error %}
+                <p class="text-danger animate__animated animate__shakeX">❌ Error: {{ wave_error }}</p>
+            {% else %}
+                <div class="weather-info animate__animated animate__fadeInUp">
+                    <div class="weather-icon mb-3">
+                        {% if wave_height < 1 %}
+                            <img src="{% static 'imgs/wave-calm.png' %}" alt="Oleaje Tranquilo" class="img-fluid">
+                        {% elif wave_height >= 1 and wave_height <= 3 %}
+                            <img src="{% static 'imgs/wave-moderate.png' %}" alt="Oleaje Moderado" class="img-fluid">
+                        {% else %}
+                            <img src="{% static 'imgs/wave-strong.png' %}" alt="Oleaje Fuerte" class="img-fluid">
+                        {% endif %}
+                    </div>
+                    <div class="weather-details">
+                        <p class="fs-5"><b>Altura de las Olas:</b> {{ wave_height }} m</p>
+                        <p class="fs-5"><b>Dirección del Oleaje:</b> {{ wave_direction }}°</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="mt-5 animate__animated animate__fadeIn">
+                <a href="{% url 'mapa' %}" class="btn btn-lg btn-outline-danger">🔙 Volver al Mapa</a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    /* Estilos generales */
+    body {
+        background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .weather-container {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        max-width: 600px;
+        width: 100%;
+        margin-bottom: -105px; 
+        height:650px;
+    }
+
+    .weather-info {
+        margin-top: 1.5rem;
+    }
+
+    .weather-icon img {
+        width: 150px;
+        height: 150px;
+    }
+
+    .weather-details p {
+        margin: 0.5rem 0;
+        color: #333;
+    }
+
+    .btn-outline-danger {
+        border: 2px solid;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-danger:hover {
+        background: rgb(252, 35, 7);
+        color: white;
+        transform: translateY(-2px);
+    }
+</style>
+
+<!-- Incluir la librería de animaciones -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+{% endblock %}

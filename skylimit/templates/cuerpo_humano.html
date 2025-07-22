@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}SkyLimit - Cuerpo Humano{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column min-vh-100">
+    <main class="flex-grow-1">
+        <div class="container mt-9 pt-9" style="margin-top: 100px !important; padding-top: 50px !important;"> 
+            <!-- 🔹 Bajamos el contenedor más abajo -->
+            <section id="cuerpo-humano" class="cuerpo-humano text-center">
+                <div class="contenido-seccion">
+                    <h2 class="fw-bold text-dark mb-5">Selecciona la parte que quieres entrenar</h2> <!-- ✅ Título negro y más espacio -->
+                    <div id="app"></div> 
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<!-- Cargar Vue y el Bundle.js generado -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script src="{% static 'js/bundle.js' %}"></script>
+{% endblock %}

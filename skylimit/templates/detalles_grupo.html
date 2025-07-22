@@ -1,0 +1,183 @@
+<style>
+    
+    /* Estilo para las opciones de mensaje */
+    .message-options {
+        display: none;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        z-index: 10;
+        padding: 5px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Mostrar opciones al pasar el cursor */
+    .mensaje:hover .message-options {
+        display: block;
+    }
+
+    /* Botón de volver */
+    .back-button {
+        margin-bottom: 20px;
+    }
+
+    .back-button a {
+        color: #007bff;
+        text-decoration: none;
+        font-size: 1.2rem;
+    }
+
+    .back-button a:hover {
+        color: #0056b3;
+        text-decoration: underline;
+    }
+
+    /* Contenedor desplazable */
+    .scrollable-container {
+        max-height: 700px;
+        overflow-y: auto;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+    }
+
+    .mensaje {
+        position: relative;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+    .bg-custom-user {
+        background-color: rgb(24, 216, 246);
+    }
+    
+</style>
+
+{% extends 'social_base.html' %}
+{% load static %}
+{% block social_content %}
+<div class="back-button">
+    <a href="{% url 'listar_grupos' %}">&larr; Volver</a>
+</div>
+
+<div class="container-fluid mt-5">
+    <div class="row justify-content-center">
+        <!-- Sección izquierda: Información del grupo -->
+        <div class="col-md-4">
+            <div class="card shadow-sm p-3 scrollable-container">
+                {% if grupo.imagen %}
+                    <img src="{{ grupo.imagen.url }}" class="card-img-top rounded" alt="Imagen del grupo">
+                {% endif %}
+                <div class="card-body">
+                    <h2 class="card-title text-primary">{{ grupo.nombre }}</h2>
+                    <p class="card-text">{{ grupo.descripcion }}</p>
+                    <p><strong>Creador:</strong> {{ grupo.creador.username }}</p>
+                    <p><strong>Miembros:</strong> {{ grupo.miembros.count }}</p>
+
+                    <h5 class="mt-4">Miembros del Grupo:</h5>
+                    <ul class="list-group list-group-flush">
+                        {% for miembro in grupo.miembros.all %}
+                            <li class="list-group-item">{{ miembro.username }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="mt-3 d-flex flex-column gap-2">
+                    {% if request.user == grupo.creador or request.user.is_staff %}
+                        <a href="{% url 'editar_grupo' grupo.id %}" class="btn btn-primary btn-block">Editar Grupo</a>
+                    {% endif %}
+                    {% if request.user == grupo.creador %}
+                        {% if request.user in grupo.miembros.all %}
+                            <a href="{% url 'salir_grupo' grupo.id %}" class="btn btn-danger btn-block">Salir del Grupo</a>
+                        {% else %}
+                            <a href="{% url 'unirse_grupo' grupo.id %}" class="btn btn-primary btn-block">Unirse al Grupo</a>
+                        {% endif %}
+                        <a href="{% url 'eliminar_grupo' grupo.id %}" 
+                        class="btn btn-danger btn-block" 
+                        onclick="return confirm('¿Estás seguro de que deseas eliminar este grupo? Esta acción no se puede deshacer.')">
+                        Eliminar Grupo
+                        </a>
+                    {% elif request.user in grupo.miembros.all %}
+                        <a href="{% url 'salir_grupo' grupo.id %}" class="btn btn-danger btn-block">Salir del Grupo</a>
+                    {% else %}
+                        <a href="{% url 'unirse_grupo' grupo.id %}" class="btn btn-primary btn-block">Unirse al Grupo</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección derecha: Mensajes -->
+        <div class="col-md-8">
+            <div class="card shadow-sm"style="height:700px">
+                <div class="card-header bg-primary text-white">
+                    <h4>Mensajes del Grupo</h4>
+                </div>
+                <div class="card-body mensajes-scroll" style="height: 400px; overflow-y: auto;">
+                    {% for mensaje in mensajes %}
+                        <div class="d-flex {% if mensaje.usuario == request.user %}justify-content-end{% else %}justify-content-start{% endif %} mensaje">
+                            <!-- Contenedor del mensaje -->
+                            <div class="mensaje {% if mensaje.usuario == request.user %}bg-custom-user text-white{% else %}bg-light text-dark{% endif %} p-3 rounded mb-2">
+                                <strong>{{ mensaje.usuario.username }}:</strong> {{ mensaje.contenido }}
+                                {% if mensaje.editado %}
+                                    <small class="text-muted">(Editado)</small>
+                                {% endif %}
+                                <div class="text-muted small text-end">{{ mensaje.fecha_creacion|date:"d M Y H:i" }}</div>
+                            </div>
+                
+                            <!-- Opciones de mensaje -->
+                            {% if es_miembro and mensaje.usuario == request.user %}
+                                <div class="message-options">
+                                    <a href="{% url 'editar_mensaje_grupo' mensaje.id %}" class="btn btn-sm btn-primary">Editar</a>
+                                    <a href="{% url 'eliminar_mensaje_grupo' mensaje.id %}" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que quieres eliminar este mensaje?');">Eliminar</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% empty %}
+                        <p class="text-center text-muted">No hay mensajes en este grupo.</p>
+                    {% endfor %}
+                </div>
+                
+                {% if es_miembro %}
+                    <div class="card-footer">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="input-group">
+                                <textarea name="mensaje" class="form-control" placeholder="Escribe tu mensaje..." rows="1"></textarea>
+                                <button type="submit" class="btn btn-primary">Enviar</button>
+                            </div>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="card-footer text-center text-muted">
+                        Debes ser miembro del grupo para enviar mensajes.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // Notificar al servidor al cargar la página
+    document.addEventListener("DOMContentLoaded", function() {
+        const url = "{% url 'actualizar_visita_grupo' grupo.id %}";
+
+        // Usar navigator.sendBeacon para actualizar la visita
+        const formData = new FormData();
+        formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+
+        navigator.sendBeacon(url, formData);
+    });
+</script>
+
+{% endblock %}

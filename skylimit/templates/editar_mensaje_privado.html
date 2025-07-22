@@ -1,0 +1,22 @@
+{% extends 'social_base.html' %}
+{% load static %}
+{% block social_content %}
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4>Editar Mensaje</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group mb-3">
+                    <label for="contenido">Contenido del Mensaje</label>
+                    <textarea id="contenido" name="contenido" class="form-control" rows="4" required>{{ mensaje.contenido }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                <a href="{% url 'detalle_conversacion' mensaje.destinatario.id %}" class="btn btn-primary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

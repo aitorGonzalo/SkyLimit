@@ -1,0 +1,275 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Editar Meta - SkyLimit</title>
+    <style>
+        body {
+            background-color: #dde1e9;
+            color: #1f283e;
+            font-family: 'Barlow', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            margin: auto;
+            max-width: 600px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 100px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        footer {
+            background-color: #151623;
+            color: #797e8e;
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+        }
+        footer .redes a {
+            color: #797e8e;
+            margin: 0 10px;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+        footer .redes a:hover {
+            color: #ff1133;
+        }
+        .contenedor-header{
+            width: 100%;
+            position: fixed;
+            border-bottom: 1px solid #1f283e;
+            background-color: rgba(0,0,0,.7);
+            z-index: 99;
+            padding: 0 20px;
+        }
+        .contenedor-header header{
+            max-width: 1100px;
+            margin: auto;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            color: #fff;
+        }
+        .txtRojo{
+            color:#ff1133;
+        }
+        .contenedor-header header nav a{
+            display: inline-block;
+            text-decoration: none;
+            color: #fff;
+            padding: 5px;
+            text-transform: uppercase;
+        }
+        .contenedor-header header nav a:hover{
+            color: #ff1133;
+        }
+        .contenedor-header header .redes a{
+            text-decoration: none;
+            color: #fff;
+            display: inline-block;
+            padding: 5px 8px;
+        }
+        .contenedor-header header .redes a:hover{
+            color: #ff1133;
+        }
+        .form-container {
+            width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow-y: auto;
+        }
+
+        .form-container h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .back-button {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor-header">
+        <header>
+            <h1>Sky<span>Limit</span></h1>
+            <nav id="nav">
+                <a href="{% url 'home' %}#inicio">Inicio</a>
+                <a href="{% url 'home' %}#nosotros">Nosotros</a>
+                <a href="{% url 'home' %}#servicios">Servicios</a>
+                <a href="{% url 'home' %}#galeria">Galería</a>
+                <a href="{% url 'home' %}#equipo">Equipo</a>
+                <a href="{% url 'home' %}#contacto">Contacto</a>
+                {% if user.is_staff %}
+                    <a href="{% url 'gestionar_entrenadores' %}" class="nav-link position-relative">
+                        <i class="fa-solid fa-envelope"></i> <!-- Ícono de buzón -->
+                        {% if solicitudes_pendientes > 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ solicitudes_pendientes }}
+                            </span>
+                        {% endif %}
+    
+                    </a>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <a href="{% url 'ver_perfil' %}">
+                        <img src="{% if user.perfilusuario and user.perfilusuario.avatar %}{{ user.perfilusuario.avatar.url }}{% else %}{% static 'imgs/default-avatar.png' %}{% endif %}" 
+                            alt="Avatar" 
+                            class="rounded-circle" 
+                            style="width: 50px; height: 50px; object-fit: cover;">
+                    </a>
+                    <form action="{% url 'logout' %}" method="POST" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger text-white shadow-none">Log Out</button>
+                    </form>
+                {% else %}
+                    <button type="button" class="btn btn-danger text-white shadow-none" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        Iniciar Sesión
+                    </button>
+                {% endif %}
+            </nav>
+        </header>
+    </div>
+
+    <div class="container">
+        <h2>Editar Meta</h2>
+        <form method="post" action="{% url 'editar_meta' meta.id %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_nombre">Nombre de la Meta</label>
+                <input type="text" name="nombre" id="id_nombre" value="{{ meta.nombre }}" required>
+            </div>
+            <div class="form-group">
+                <label for="id_descripcion">Descripción</label>
+                <textarea name="descripcion" id="id_descripcion">{{ meta.descripcion }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="id_objetivo">Objetivo</label>
+                <input type="number" name="objetivo" id="id_objetivo" value="{{ meta.objetivo }}" required>
+            </div>
+            <div class="form-group">
+                <label for="id_unidad">Unidad del Objetivo</label>
+                <select name="unidad" id="id_unidad">
+                    <option value="kg" {% if meta.unidad == "kg" %}selected{% endif %}>Kilogramos</option>
+                    <option value="km" {% if meta.unidad == "km" %}selected{% endif %}>Kilómetros</option>
+                    <option value="pasos" {% if meta.unidad == "pasos" %}selected{% endif %}>Pasos</option>
+                    <option value="horas" {% if meta.unidad == "horas" %}selected{% endif %}>Horas</option>
+                    <option value="minutos" {% if meta.unidad == "minutos" %}selected{% endif %}>Minutos</option>
+                    <option value="repeticiones" {% if meta.unidad == "repeticiones" %}selected{% endif %}>Repeticiones</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="id_fecha_fin">Fecha de Fin</label>
+                <input type="datetime-local" name="fecha_fin" id="id_fecha_fin" value="{{ meta.fecha_fin|date:'Y-m-d\TH:i' }}" required>
+            </div>
+            <div class="form-group">
+                <label for="id_imagen">Imagen de la Meta</label>
+                <input type="file" name="imagen" id="id_imagen">
+                {% if meta.imagen %}
+                    <p>Imagen actual:</p>
+                    <img src="{{ meta.imagen.url }}" alt="Meta Image" style="max-width: 200px; border-radius: 10px;">
+                {% endif %}
+            </div>
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-danger w-100 me-2">Guardar</button>
+                <a href="{% url 'listar_metas' %}" class="btn btn-danger w-100 me-2">Cancelar</a>
+            </div>
+        </form>
+        
+    </div>
+
+    <footer>
+        <div class="info">
+            <p>&copy; 2025 SkyLimit. Todos los derechos reservados.</p>
+            <div class="redes">
+                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#"><i class="fa-brands fa-youtube"></i></a>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

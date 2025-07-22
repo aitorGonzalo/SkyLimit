@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ejercicios para {{ nombre_mostrado }} - SkyLimit{% endblock %}
+{% block content %}
+<div class="d-flex flex-column min-vh-100">
+    <main class="flex-grow-1">
+        <div class="container mt-9 pt-5" style="margin-top: 100px !important; padding-top: 60px !important;"> 
+            
+            <!-- 🔴 Botón de regreso mejor posicionado -->
+            <div class="text-start">
+                <a href="{% url 'cuerpo_humano' %}" class="btn btn-danger btn-sm px-3 py-2">
+                    <i class="fa fa-arrow-left"></i> Volver
+                </a>
+            </div>
+
+            <h2 class="text-center fw-bold text-dark mb-5">Ejercicios para {{ nombre_mostrado }}</h2>
+
+            <!-- Mostrar todos los ejercicios en el mismo contenedor -->
+            {% if ejercicios or ejercicios_extra %}
+                <div class="ejercicios-list-container">
+                    <div class="ejercicios-list">
+
+                        <!-- Ejercicios locales -->
+                        {% for ejercicio in ejercicios %}
+                            <div class="ejercicio-card shadow-lg">
+                                <div class="ejercicio-media">
+                                    {% if ejercicio.imagen %}
+                                        <img src="{{ ejercicio.imagen.url }}" class="ejercicio-img" alt="{{ ejercicio.nombre }}">
+                                    {% elif ejercicio.video %}
+                                        <video class="ejercicio-img" controls>
+                                            <source src="{{ ejercicio.video.url }}" type="video/mp4">
+                                            Tu navegador no soporta videos.
+                                        </video>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="ejercicio-info">
+                                    <h4 class="ejercicio-title">{{ ejercicio.nombre }}</h4>
+                                    <p class="ejercicio-description">{{ ejercicio.descripcion }}</p>
+                                    <p class="ejercicio-ejecución">{{ ejercicio.descripcionEjer }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        <!-- Ejercicios extra -->
+                        {% for ejercicio in ejercicios_extra %}
+                            <div class="ejercicio-card shadow-lg">
+                                <div class="ejercicio-media">
+                                    <img src="{{ ejercicio.imagen }}" class="ejercicio-img" alt="{{ ejercicio.nombre }}">
+                                </div>
+                                
+                                <div class="ejercicio-info">
+                                    <h4 class="ejercicio-title">{{ ejercicio.nombre }}</h4>
+                                    <p class="ejercicio-description">{{ ejercicio.descripcion }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </main>
+</div>
+
+<!-- Estilos mejorados -->
+<style>
+    /* 🔴 Ajuste del botón de volver más arriba y a la izquierda */
+    .text-start {
+        position: absolute;
+        top: 120px;
+        left: 20px;
+    }
+
+    .ejercicios-list-container {
+        max-height: 500px;
+        overflow-y: auto;
+        padding-right: 10px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .ejercicios-list {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .ejercicio-card {
+        display: flex;
+        align-items: center;
+        background: #ffffff;
+        border-radius: 10px;
+        overflow: hidden;
+        padding: 15px;
+        border: 1px solid #ddd;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .ejercicio-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .ejercicio-media {
+        flex: 1;
+        max-width: 350px;
+    }
+
+    .ejercicio-img {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+    }
+
+    .ejercicio-info {
+        flex: 2;
+        padding: 20px;
+    }
+
+    .ejercicio-title {
+        font-size: 26px;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .ejercicio-description {
+        font-size: 18px;
+        line-height: 1.6;
+        text-align: justify;
+    }
+</style>
+{% endblock %}

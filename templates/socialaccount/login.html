@@ -1,0 +1,119 @@
+{% load i18n %}
+{% load allauth %}
+{% load socialaccount %}
+
+{% block content %}
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Barlow', sans-serif;
+    }
+
+    body {
+        background: linear-gradient(rgba(0, 14, 41, 0.6), rgba(0, 7, 78, 0.7)), url("/static/imgs/fondo.jpg");
+        background-size: cover;
+        background-position: center;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .container {
+        background: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        padding: 40px;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 2rem;
+        color: #ff1133;
+        margin-bottom: 20px;
+    }
+
+    p {
+        font-size: 1rem;
+        color: #d1d1d1;
+        margin-bottom: 30px;
+    }
+
+    .btn {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        background: #ff1133;
+        color: #fff;
+        font-size: 1rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+        margin-bottom: 15px;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 17, 51, 0.5);
+    }
+
+    .btn-google {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: #fff;
+        color: #000;
+        font-weight: bold;
+        margin-top: 10px;
+        border: 1px solid #d1d1d1;
+        padding: 12px;
+        border-radius: 5px;
+    }
+
+    .btn-google img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .btn-google:hover {
+        background: #f1f1f1;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+</style>
+
+<div class="container">
+    {% if process == "connect" %}
+        <h1>
+            {% blocktrans with provider.name as provider %}Conectar con {{ provider }}{% endblocktrans %}
+        </h1>
+        <p>
+            {% blocktrans with provider.name as provider %}Estás a punto de conectar una nueva cuenta de terceros de {{ provider }}.{% endblocktrans %}
+        </p>
+    {% else %}
+        <h1>
+            {% blocktrans with provider.name as provider %}Iniciar sesión con {{ provider }}{% endblocktrans %}
+        </h1>
+        <p>
+            {% blocktrans with provider.name as provider %}Estás a punto de iniciar sesión usando una cuenta de terceros de {{ provider }}.{% endblocktrans %}
+        </p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn">Continuar</button>
+       
+    </form>
+</div>
+
+{% endblock content %}

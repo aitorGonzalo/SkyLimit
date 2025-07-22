@@ -1,0 +1,408 @@
+<style>
+    <style>
+        
+        /* Encabezado de bienvenida */
+        .bienvenida {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #343a40;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+    
+        /* Botón de crear publicación */
+        .crear-publicacion-btn {
+            font-size: 1rem;
+            padding: 10px 20px;
+            background-color: #007bff;
+            border: none;
+            color: #fff;
+            border-radius: 25px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .crear-publicacion-btn:hover {
+            background-color: #0056b3;
+            box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
+        }
+    
+        /* Contenedor de scroll */
+        .container-scrollable {
+            height: 800px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            background: #f8f9fa;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    
+        /* Tarjeta de publicación */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+        }
+    
+        /* Encabezado de la tarjeta */
+        .card-header {
+            background-color: #f1f1f1;
+            border-radius: 12px 12px 0 0;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .card-header .text-muted {
+            font-size: 0.9rem;
+            font-weight: normal;
+        }
+    
+        /* Contenido de la tarjeta */
+        .card-body {
+            padding: 20px;
+        }
+    
+        .card-body p {
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.6;
+        }
+    
+       /* Imagenes y videos */
+        .card-body img, .card-body video {
+            width: 700px;
+            height: 700px;
+            object-fit: cover;
+            border-radius: 12px;
+            background-color: #ddd;
+            margin-bottom: 15px;
+            display: block; /* Convierte el elemento en bloque */
+            margin: 0 auto; /* Centra horizontalmente */
+        }
+
+    
+        /* Footer de la tarjeta */
+        .card-footer {
+            background-color: #f9f9f9;
+            border-radius: 0 0 12px 12px;
+            padding: 15px;
+        }
+        .card-footer .btn {
+            border-radius: 25px;
+            font-size: 0.9rem;
+        }
+    
+        /* Comentarios */
+        .comentario-contenido {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #333;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+    
+        .comentario-fecha {
+            font-size: 0.8rem;
+            color: #999;
+        }
+    
+        /* Textos destacados */
+        .text-warning {
+            color: #ffc107;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    
+        .text-warning i {
+            color: #ffc107;
+        }
+    </style>
+    
+    
+</style>
+
+{% extends 'social_base.html' %}
+
+{% block social_content %}
+<div class="container mt-5">
+        <h1 class="text-center bienvenida">¡Bienvenido a la comunidad de SkyLimit!</h1>
+
+        <div class="text-end mb-3">
+            <a href="{% url 'crear_publicacion' %}" class="btn btn-primary crear-publicacion-btn">Crear Publicación</a>
+        </div>
+    </div>
+    <div class="overflow-auto container-scrollable">
+        <div class="row gy-4" id="publicaciones-container">
+            {% for publicacion in publicaciones %}
+            <div class="col-12" id="publicacion-{{ publicacion.id }}">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>
+                                {{ publicacion.autor.username }}
+                                {% if publicacion.es_destacada %}
+                                    <span class="ms-2 text-warning"><i class="fa-solid fa-star"></i> Entrenador Verificado</span>
+                                {% endif %}
+                            </strong>
+                            <small class="text-muted">- {{ publicacion.fecha_creacion|date:"d M Y H:i" }}</small>
+                        </div>
+                        {% if publicacion.autor == user %}
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'editar_publicacion' publicacion.id %}">Editar</a></li>
+                                <li><a class="dropdown-item delete-publicacion-button" data-id="{{ publicacion.id }}" href="#">Borrar</a></li>
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+
+                    <div class="card-body">
+                        {% if publicacion.contenido %}
+                        <p>{{ publicacion.contenido }}</p>
+                        {% endif %}
+                        
+                        {% if publicacion.imagen %}
+                        <img src="{{ publicacion.imagen.url }}" alt="Imagen de la publicación" class="imagen" />
+                        {% endif %}
+
+                        {% if publicacion.video %}
+                        <video controls class="video">
+                            <source src="{{ publicacion.video.url }}" type="video/mp4">
+                            Tu navegador no soporta la reproducción de videos.
+                        </video>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <button class="btn btn-sm btn-outline-danger like-button" data-id="{{ publicacion.id }}">
+                                    <i class="fa-solid fa-heart {% if publicacion.user_liked %}text-danger{% else %}text-secondary{% endif %}"></i>
+                                    (<span id="like-count-{{ publicacion.id }}">{{ publicacion.likes.count }}</span>)
+                                </button>
+                            </div>
+
+                            <div>
+                                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#comentarios-{{ publicacion.id }}" aria-expanded="false" aria-controls="comentarios-{{ publicacion.id }}">
+                                    <i class="fa-solid fa-comment-dots"></i>
+                                    (<span id="comentario-count-{{ publicacion.id }}">{{ publicacion.comentarios.count }}</span>)
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="collapse mt-3" id="comentarios-{{ publicacion.id }}">
+                            <ul class="list-group" id="comentarios-list-{{ publicacion.id }}">
+                                {% for comentario in publicacion.comentarios.all %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center" id="comentario-{{ comentario.id }}">
+                                    <div>
+                                        <strong class="text-primary">{{ comentario.autor.username }}</strong>
+                                        <p class="comentario-contenido mt-2 mb-1">{{ comentario.contenido }}</p>
+                                        <small class="text-muted comentario-fecha d-block">{{ comentario.fecha_creacion|date:"d M Y H:i" }}</small>
+                                    </div>
+                                    {% if comentario.autor == user %}
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="{% url 'editar_comentario' comentario.id %}">Editar</a></li>
+                                            <li><a class="dropdown-item delete-comentario-button" data-id="{{ comentario.id }}" href="#">Borrar</a></li>
+                                        </ul>
+                                    </div>
+                                    {% endif %}
+                                </li>
+                                {% empty %}
+                                <li class="list-group-item text-center text-muted">No hay comentarios aún.</li>
+                                {% endfor %}
+                            </ul>
+
+                            <div class="mt-3">
+                                <input type="text" id="comentario-input-{{ publicacion.id }}" class="form-control" placeholder="Escribe un comentario...">
+                                <button class="btn btn-primary mt-2 comentario-button" data-id="{{ publicacion.id }}">Comentar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">No hay publicaciones aún. ¡Sé el primero en publicar algo!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        
+        // Funcionalidad para dar like
+        document.querySelectorAll(".like-button").forEach(button => {
+            button.addEventListener("click", function() {
+                const publicacionId = this.dataset.id;
+                fetch(`/publicacion/${publicacionId}/like/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                        "Content-Type": "application/json"
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const likeCount = document.getElementById(`like-count-${publicacionId}`);
+                        likeCount.textContent = data.like_count;
+                        const heartIcon = this.querySelector("i");
+                        if (data.user_liked) {
+                            heartIcon.classList.remove("text-secondary");
+                            heartIcon.classList.add("text-danger");
+                        } else {
+                            heartIcon.classList.remove("text-danger");
+                            heartIcon.classList.add("text-secondary");
+                        }
+                    }
+                });
+            });
+        });
+
+       // Funcionalidad para agregar comentarios
+        document.querySelectorAll(".comentario-button").forEach(button => {
+            button.addEventListener("click", function() {
+                const publicacionId = this.dataset.id;
+                const comentarioInput = document.getElementById(`comentario-input-${publicacionId}`);
+                const contenido = comentarioInput.value.trim();
+                if (contenido === "") return;
+
+                fetch(`/publicacion/${publicacionId}/comentario/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ contenido: contenido })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const comentariosList = document.getElementById(`comentarios-list-${publicacionId}`);
+                        const nuevoComentario = document.createElement("li");
+                        nuevoComentario.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+                        nuevoComentario.id = `comentario-${data.comentario_id}`;
+
+                        const fecha = new Date().toLocaleString("es-ES", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        });
+
+                        nuevoComentario.innerHTML = `
+                        <div>
+                            <strong class="text-primary">${data.comentario_autor}</strong>
+                            <p class="comentario-contenido mt-2 mb-1">${data.comentario_contenido}</p>
+                            <small class="text-muted comentario-fecha d-block">${fecha}</small>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="/comentario/${data.comentario_id}/edit/">Editar</a></li>
+                                <li><a class="dropdown-item delete-comentario-button" data-id="${data.comentario_id}" href="#">Borrar</a></li>
+                            </ul>
+                        </div>
+                    `;
+                    
+
+                        comentariosList.appendChild(nuevoComentario);
+                        comentarioInput.value = "";
+
+                        // Actualizar el contador de comentarios
+                        const comentarioCount = document.getElementById(`comentario-count-${publicacionId}`);
+                        comentarioCount.textContent = parseInt(comentarioCount.textContent) + 1;
+
+                        // Reasignar eventos de eliminación
+                        const deleteButton = nuevoComentario.querySelector(".delete-comentario-button");
+                        deleteButton.addEventListener("click", function() {
+                            const comentarioId = this.dataset.id;
+                            const comentarioElemento = document.getElementById(`comentario-${comentarioId}`);
+                            if (confirm("¿Seguro que quieres borrar este comentario?")) {
+                                fetch(`/comentario/${comentarioId}/delete/`, {
+                                    method: "DELETE",
+                                    headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        comentarioElemento.remove();
+                                        const comentarioCount = document.getElementById(`comentario-count-${publicacionId}`);
+                                        comentarioCount.textContent = parseInt(comentarioCount.textContent) - 1;
+                                    } else {
+                                        alert("Error al eliminar el comentario.");
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        });
+
+        document.querySelectorAll(".delete-publicacion-button").forEach(button => {
+            button.addEventListener("click", function () {
+                const publicacionId = this.dataset.id;
+                if (confirm("¿Seguro que quieres borrar esta publicación?")) {
+                    fetch(`/publicacion/${publicacionId}/delete/`, {
+                        method: "DELETE",
+                        headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById(`publicacion-${publicacionId}`).remove();
+                        } else {
+                            alert("Error al eliminar la publicación.");
+                        }
+                    });
+                }
+            });
+        });
+          // Funcionalidad para eliminar comentarios
+          document.querySelectorAll(".delete-comentario-button").forEach(button => {
+            button.addEventListener("click", function() {
+                const comentarioId = this.dataset.id;
+                const comentarioElemento = document.getElementById(`comentario-${comentarioId}`);
+                if (confirm("¿Seguro que quieres borrar este comentario?")) {
+                    fetch(`/comentario/${comentarioId}/delete/`, {
+                        method: "DELETE",
+                        headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            comentarioElemento.remove();
+                        } else {
+                            alert("Error al eliminar el comentario.");
+                        }
+                    });
+                }
+            });
+        });
+    });
+    
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+
+<style>
+    .back-button {
+        margin-bottom: 20px;
+    }
+
+    .back-button a {
+        color: #007bff;
+        text-decoration: none;
+        font-size: 1.2rem;
+    }
+
+    .back-button a:hover {
+        color: #0056b3;
+        text-decoration: underline;
+    }
+</style>
+{% extends 'social_base.html' %}
+
+{% block social_content %}
+<div class="back-button">
+    <a href="{% url 'social_home'%}">&larr; Volver</a>
+</div>
+<div class="container mt-5">
+    <h1 class="text-center">Editar Publicación</h1>
+    <form action="{% url 'editar_publicacion' publicacion.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="contenido" class="form-label">Contenido</label>
+            <textarea class="form-control" id="contenido" name="contenido" rows="3">{{ publicacion.contenido }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label for="imagen" class="form-label">Imagen</label>
+            <input type="file" class="form-control" id="imagen" name="imagen">
+        </div>
+        <div class="mb-3">
+            <label for="video" class="form-label">Video</label>
+            <input type="file" class="form-control" id="video" name="video">
+        </div>
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

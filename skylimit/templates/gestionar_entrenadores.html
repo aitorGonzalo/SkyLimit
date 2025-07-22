@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Solicitudes Entrenador{% endblock %}
+{% block extra_css %}
+<style>
+    body {
+        background-color: #000 !important; /* Fondo negro */
+        color: #fff; /* Texto blanco para contraste */
+    }
+    .card {
+        background-color: #1c1c1e; /* Color oscuro para la tarjeta */
+        color: #fff; /* Texto blanco dentro de la tarjeta */
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+    }
+    .btn-danger {
+        background-color: #ff1133;
+        border: none;
+    }
+    .table {
+        background-color: #1c1c1e;
+        border-radius: 12px;
+        color: #fff;
+    }
+    .table th, .table td {
+        vertical-align: middle;
+    }
+    .table thead {
+        background-color: #343a40;
+    }
+    h1 {
+        font-weight: bold;
+        color: #ff1133; /* Color rojo para encabezado */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card shadow-lg p-4" style="width: 90%; max-width: 1200px;">
+        <h1 class="text-center mb-4">
+            Solicitudes de Entrenadores 
+        </h1>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover text-center align-middle">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Nombre y Apellidos</th>
+                        <th>Especialidades</th>
+                        <th>Fecha Solicitud</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for solicitud in solicitudes_pendientes %}
+                    <tr>
+                        <td>{{ solicitud.username }}</td>
+                        <td>{{ solicitud.nombre }} {{ solicitud.apellidos }}</td>
+                        <td>{{ solicitud.especialidades }}</td>
+                        <td>{{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <form method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="solicitud_id" value="{{ solicitud.id }}">
+                                <button name="accion" value="aprobar" class="btn btn-success btn-sm">
+                                    <i class="fa-solid fa-check"></i> Aprobar
+                                </button>
+                                <button name="accion" value="rechazar" class="btn btn-danger btn-sm">
+                                    <i class="fa-solid fa-times"></i> Rechazar
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No hay solicitudes pendientes</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

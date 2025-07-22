@@ -1,0 +1,359 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load socialaccount %}
+
+{% block title %}SkyLimit - Inicio{% endblock %}
+
+{% block content %}
+
+<style>
+    
+
+    @media (max-width: 768px) {
+        /* Sección Nosotros */
+        section.nosotros {
+            padding: 40px 0;
+        }
+
+        /* Ajuste para la fila principal */
+        .nosotros .fila {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Ocultar imagen en móviles */
+        .nosotros .col img {
+            display: none !important;
+        }
+
+        /* Ocultar texto en móviles */
+        .nosotros .col p,
+        .nosotros .col .contenedor-titulo {
+            display: none;
+        }
+
+        /* Ajuste para la sección de "Únete a la comunidad" */
+        .fila-nosotros {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        /* Botón */
+        .col2 {
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Ajustes del botón */
+        .btn-mas {
+            padding: 12px 30px;
+            font-size: 16px;
+            min-width: 250px;
+            white-space: nowrap;
+            margin-top: 20px;
+        }
+    }
+</style>
+
+    
+    
+    <!-- SECCION INICIO -->
+    <section id="inicio" class="inicio">
+        <div class="contenido-seccion">
+            <div class="info">
+                <h2>HAZ QUE <span class="txtRojo">OCURRA</span></h2>
+                <p class="text-white">Con SkyLimit, el éxito está a tu alcance.</p>
+                {% if not user.is_authenticated %}
+                <button type="button" class="btn btn-danger text-white shadow-none" data-bs-toggle="modal" data-bs-target="#RegisterModal">
+                    Regístrate
+                </button>
+                {% endif %}
+            </div>
+            <div class="opciones">
+                <div class="opcion">01.FITNESS</div>
+                <div class="opcion">02.FUTBOL</div>
+                <div class="opcion">03.BOXING</div>
+                <div class="opcion">04.ESCALADA</div>
+                <div class="opcion">05.SNOW</div>
+                <div class="opcion">06.SURF</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCION NOSOTROS -->
+    <section id="nosotros" class="nosotros">
+        <div class="fila">
+            <div class="col">
+                <img src="{% static 'imgs/nosotros.png' %}" alt="Nosotros">
+            </div>
+            <div class="col">
+                <div class="contenedor-titulo">
+                    <div class="numero">01</div>
+                    <div class="info">
+                        <span class="frase">LA MEJOR EXPERIENCIA</span>
+                        <h2>NOSOTROS</h2>
+                    </div>
+                </div>
+                <p class="p-especial">Nuestro propósito es ayudarte a conseguir tu mejor versión, dejando atrás tus miedos y, sobre todo, divirtiéndote durante el proceso.</p>
+                <p> Somos una gran comunidad de amantes del deporte. En ella podrás encontrar personas con las que practicar tus deportes favoritos y crear grandes vínculos en torno a un hobby, e incluso una serie de entrenadores especializados en ciertos deportes que te guiarán y ayudarán durante el proceso.
+                    Además, como hemos visto que a nuestra comunidad le encantan los deportes de riesgo, hemos decidido implementar una sección para ayudar a disfrutar de las mejores condiciones posibles.
+                </p>
+            </div>
+        </div>
+        <hr>
+        <div class="fila-nosotros">
+            <div class="col1">
+                <span class="frase"><span class="txtRojo">DEJÁNOS</span> AYUDARTE</span>
+                <h2>A <span class="txtRojo">DISFRUTAR</span> HOY!</h2>
+            </div>
+            <div class="col2">
+                {% if user.is_authenticated %}
+                    <!-- Si el usuario está autenticado, redirige a la página de la red social -->
+                    <button class="btn btn-mas" onclick="window.location.href='{% url 'social_home' %}'">ÚNETE A LA COMUNIDAD</button>
+                {% else %}
+                    <!-- Si no está autenticado, abre el modal de inicio de sesión -->
+                    <button type="button" class="btn btn-mas" data-bs-toggle="modal" data-bs-target="#loginModal">ÚNETE A LA COMUNIDAD</button>
+                {% endif %}
+            </div>            
+        </div>
+    </section>
+
+    <!-- SECCION SERVICIOS -->
+    <section id="servicios" class="servicios">
+        <div class="contenido-seccion">
+            <div class="fila">
+                <div class="col">
+                    <div class="contenedor-titulo">
+                        <div class="numero">02</div>
+                        <div class="info">
+                            <span class="frase">LA MEJOR EXPERIENCIA</span>
+                            <h2>SERVICIOS</h2>
+                        </div>
+                    </div>
+                    <p class="p-especial">Tenemos el placer de comunicarte lo siguiente.</p>
+                    <p>Si decides formar parte de nuestra comunidad, podrás acceder a grandes grupos de personas entusiasmadas por el deporte. Además, podrás realizar rutinas predefinidas según tu nivel en diferentes disciplinas. ¡Y por si fuera poco! Si tienes la suerte de que alguno de nuestros entrenadores dispone de vacantes, podrás acceder a una guía totalmente gratuita y personalizada según tus necesidades. Para los menos afortunados, disponemos de un entrenador digital que también será capaz de ayudarte durante tu proceso. Además, te permitiremos visualizar las condiciones meteorológicas de la montaña, el mar... para que puedas disfrutar de las mejores oportunidades en tus deportes preferidos.
+                    </p>
+                </div>
+                <div class="col">
+                    <img src="{% static 'imgs/servicios.png' %}" alt="Servicios">
+                </div>
+            </div>
+        </div>
+        <div class="info-servicios">
+            <table>
+                <div class="info-servicios">
+                    <table>
+                        <tr>
+                            <td>
+                                <i class="fa-solid fa-bullseye"></i>
+                                <h3><span class="txtRojo">Metas</span> personales</h3>
+                                <a href="{% url 'listar_metas' %}" 
+                                   class="btn btn-danger text-white shadow-none" 
+                                   style="width: 100%; margin-top: 10px;"
+                                   onclick="return checkAuthentication(event)">
+                                    Más Info
+                                </a>
+                            </td>
+                            
+                            <td>
+                                <i class="fa-solid fa-dumbbell"></i>
+                                <h3><span class="txtRojo">Información</span> deportiva</h3>
+                                <a href="{% url 'cuerpo_humano' %}" 
+                                class="btn btn-danger text-white shadow-none" 
+                                style="width: 100%; margin-top: 10px;" 
+                                onclick="return checkAuthentication(event)">
+                                    Más Info
+                                </a>
+
+                            </td>
+                            
+                            
+                            <td>
+                                <i class="fa-solid fa-heart-pulse"></i> 
+                                <h3><span class="txtRojo">Entrenador</span> virtual</h3>
+                                <a href="{% url 'entrenador_virtual' %}" 
+                                   class="btn btn-danger text-white shadow-none" 
+                                   style="width: 100%;margin-top: 10px;" 
+                                   onclick="return checkAuthentication(event)">
+                                    Más Info
+                                </a>
+                            </td>
+                            
+                            
+                            {% if request.user.is_authenticated and request.user.entrenador.aprobado_por_admin %}
+                                <td>
+                                    <i class="fa-solid fa-user"></i> 
+                                    <h3><span class="txtRojo">Usuarios</span> que entreno</h3>
+                                    <a href="{% url 'listar_usuarios_entrenados' %}" 
+                                    class="btn btn-danger text-white shadow-none" 
+                                    style="width: 100%; margin-top: 10px;" 
+                                    onclick="return checkAuthentication(event)">
+                                        Ver
+                                    </a>
+                                </td>
+                            {% else %}
+                                <td>
+                                    <i class="fa-solid fa-user"></i> 
+                                    <h3><span class="txtRojo">Busca</span> a tu entrenador</h3>
+                                    <a href="{% url 'listar_entrenadores' %}" 
+                                    class="btn btn-danger text-white shadow-none" 
+                                    style="width: 100%; margin-top: 10px;" 
+                                    onclick="return checkAuthentication(event)">
+                                        Contáctale
+                                    </a>
+                                </td>
+                            {% endif %}
+
+                            <td>
+                                <i class="fa-solid fa-mountain"></i> 
+                                <h3><span class="txtRojo">Deportes</span> de Riesgo</h3>
+                                <button class="btn btn-danger text-white shadow-none" 
+                                        style="width: 100%;" 
+                                        onclick="return checkAuthentication(event, '/mapa/')">
+                                    Ver Condiciones
+                                </button>
+
+                            </td>
+                            
+                        </tr>
+                      
+                    </table>
+                </div>
+                
+                
+                
+            </table>
+        </div>
+        
+        
+    </section>
+
+    <!-- SECCION GALERIA -->
+    <section id="galeria" class="galeria">
+        <div class="contenido-seccion">
+            <div class="contenedor-titulo">
+                <div class="numero">04</div>
+                <div class="info">
+                    <span class="frase">LA MEJOR EXPERIENCIA</span>
+                    <h2>GALERIA</h2>
+                </div>
+            </div>
+            <div class="fila">
+                <div class="col"><img src="{% static 'imgs/f1.jpg' %}" alt="Foto 1"></div>
+                <div class="col"><img src="{% static 'imgs/f2.jpg' %}" alt="Foto 2"></div>
+                <div class="col"><img src="{% static 'imgs/f3.jpg' %}" alt="Foto 3"></div>
+            </div>
+            <div class="fila">
+                <div class="col"><img src="{% static 'imgs/f4.jpg' %}" alt="Foto 4"></div>
+                <div class="col"><img src="{% static 'imgs/f5.jpg' %}" alt="Foto 5"></div>
+                <div class="col"><img src="{% static 'imgs/f6.jpg' %}" alt="Foto 6"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCION EQUIPO -->
+    <section id="equipo" class="equipo">
+        <div class="contenido-seccion">
+            <div class="contenedor-titulo">
+                <div class="numero">05</div>
+                <div class="info">
+                    <span class="frase">LA MEJOR EXPERIENCIA</span>
+                    <h2>EQUIPO</h2>
+                </div>
+            </div>
+            <div class="fila">
+                <div class="col">
+                    <img src="{% static 'imgs/e1.png' %}" alt="Entrenador Marcos">
+                    <div class="info">
+                        <h2>MARCOS</h2>
+                        <p>Fitness - Surf - Escalada</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <img src="{% static 'imgs/e2.png' %}" alt="Entrenadora Patricia">
+                    <div class="info">
+                        <h2>PATRICIA</h2>
+                        <p>Snow - Boxeo</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <img src="{% static 'imgs/e3.png' %}" alt="Entrenador Juan">
+                    <div class="info">
+                        <h2>JUAN</h2>
+                        <p>Surf - Snow - Escalada</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCION CONTACTO -->
+<section id="contacto" class="contacto">
+    <div class="contenido-seccion">
+        <div class="contenedor-titulo">
+            <div class="numero">06</div>
+            <div class="info">
+                <span class="frase">LA MEJOR EXPERIENCIA</span>
+                <h2>CONTACTO</h2>
+            </div>
+        </div>
+
+        <!-- Mostrar mensajes de éxito o error -->
+        <div class="container mt-4">
+            {% if messages %}
+                {% for message in messages %}
+                    {% if 'contacto' in message.tags %}
+                        <div class="alert 
+                                    {% if message.tags %}
+                                        alert-{{ message.tags }}
+                                    {% else %}
+                                        alert-info
+                                    {% endif %}
+                                    alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+        
+
+        <!-- Formulario de contacto -->
+        <form action="{% url 'contacto' %}" method="POST">
+            {% csrf_token %}
+            <div class="fila">
+                <div class="col"><input type="email" name="email" placeholder="Tu Email" required></div>
+                <div class="col"><input type="text" name="nombre" placeholder="Tu Nombre" required></div>
+            </div>
+            <textarea name="mensaje" placeholder="Tu Mensaje" required></textarea>
+            <button type="submit">Enviar Mensaje</button>
+        </form>
+    </div>
+</section>
+<script>
+    function checkAuthentication(event, url = null) {
+        var isAuthenticated = {{ user.is_authenticated|lower }};  // True o False según autenticación
+
+        if (!isAuthenticated) {
+            event.preventDefault();  // Evita la acción predeterminada
+            var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            loginModal.show();  // Muestra el modal de inicio de sesión
+            return false;  // Bloquea la navegación
+        }
+
+        // Si el usuario está autenticado y hay una URL, redirigir
+        if (url) {
+            window.location.href = url;
+        }
+
+        return true;  // Permite la navegación si está autenticado
+    }
+</script>
+
+
+
+{% endblock %}
+  

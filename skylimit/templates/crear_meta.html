@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Crear Meta - SkyLimit{% endblock %}
+
+{% block content %}
+<div class="container-fluid d-flex justify-content-center align-items-center" style="min-height: 100vh; padding: 100px 0;">
+    <div class="card p-4 overflow-auto" style="width: 800px; height:700px ; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
+        <h2 class="text-center mb-3">Crear Nueva Meta</h2>
+
+        <form method="post" enctype="multipart/form-data" class="mt-2">
+            {% csrf_token %}
+            <div class="mb-2">
+                {{ form.as_p }}
+            </div>
+
+          
+
+          
+            <button type="submit" class="btn btn-danger w-100 py-2">Guardar Meta</button>
+        </form>
+
+        <!-- Botón para volver a la lista de metas -->
+        <div class="text-center mt-3">
+            <a href="{% url 'listar_metas' %}" class="btn btn-danger w-100 py-2">
+                <i class="fa-solid fa-arrow-left"></i> Volver a Mis Metas
+            </a>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

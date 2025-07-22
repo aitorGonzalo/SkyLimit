@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}🏋️‍♂️ Entrenador Virtual{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column min-vh-100">
+    <main class="flex-grow-1 position-relative"> <!-- 👈 esto es clave -->
+        <!-- Formulario principal -->
+        <div class="container mt-5 pt-6" id="form-container">
+            <h2 class="text-center fw-bold">🏋️‍♂️ Entrenador Virtual</h2>
+            <p class="text-center text-muted">Selecciona tu objetivo y nivel para generar tu rutina personalizada.</p>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="card shadow-lg border-0 rounded-lg">
+                        <div class="card-body">
+                            <form method="POST" id="rutina-form">
+                                {% csrf_token %}
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">{{ form.objetivo.label }}</label>
+                                    {{ form.objetivo }}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">{{ form.nivel.label }}</label>
+                                    {{ form.nivel }}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">{{ form.altura.label }}</label>
+                                    {{ form.altura }}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">{{ form.peso.label }}</label>
+                                    {{ form.peso }}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">{{ form.edad.label }}</label>
+                                    {{ form.edad }}
+                                </div>
+
+                                <button type="submit" class="btn btn-danger w-100 shadow">
+                                    <i class="fa-solid fa-dumbbell"></i> Generar Rutina
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       <!-- Spinner moderno -->
+        <div id="loading-screen" class="loading-overlay">
+            <div class="loading-content text-center">
+                <div class="custom-spinner mb-4"></div>
+                <p class="loading-text">Generando tu rutina perfecta<span class="dots"></span></p>
+            </div>
+        </div>
+
+
+    </main>
+</div>
+
+<!-- Estilos -->
+<style>
+    .mt-6 {
+        margin-top: 6rem !important;
+    }
+
+    .pt-6 {
+        padding-top: 6rem !important;
+    }
+
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border: none;
+        transition: background 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        background-color: #bb2d3b;
+    }
+
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.4); /* Fondo suave */
+        backdrop-filter: blur(2px);
+        z-index: 10;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        pointer-events: none;
+    }
+    
+    .loading-content {
+        pointer-events: none;
+        animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    /* Spinner personalizado con animación suave */
+    .custom-spinner {
+        width: 60px;
+        height: 60px;
+        border: 6px solid #f3f3f3;
+        border-top: 6px solid #dc3545; /* rojo bootstrap */
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: auto;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #dc3545;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .dots::after {
+        content: "...";
+        animation: dots 1.5s infinite steps(4);
+    }
+    
+    @keyframes dots {
+        0% { content: ""; }
+        25% { content: "."; }
+        50% { content: ".."; }
+        75% { content: "..."; }
+        100% { content: ""; }
+    }
+    
+</style>
+
+<!-- Script -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("rutina-form");
+        const formContainer = document.getElementById("form-container");
+        const loadingScreen = document.getElementById("loading-screen");
+
+        form.addEventListener("submit", function () {
+            formContainer.style.display = "none";
+            loadingScreen.style.display = "flex"; // Mostrar overlay con flex centrado
+        });
+    });
+</script>
+{% endblock %}

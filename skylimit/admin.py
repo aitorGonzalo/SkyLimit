@@ -1,0 +1,23 @@
+from django.contrib import admin
+from skylimit.models import  Entrenamiento, Entreno, MensajePrivado, SolicitudEntrenamiento,Notificacion, PerfilUsuario,SolicitudEntrenador,Entrenador,Grupo,MensajeGrupo,Actividad,ChatActividad,MensajeActividad,GrupoVisitado,Comentario,Publicacion,Like,Reto,ParticipacionReto,MetaUsuario,ProgresoMeta
+# Register your models here.
+admin.site.register(PerfilUsuario)
+admin.site.register(Entrenador)
+admin.site.register(Grupo)
+admin.site.register(Actividad)
+admin.site.register(ChatActividad)
+admin.site.register(MensajeActividad)
+admin.site.register(GrupoVisitado)
+admin.site.register(Publicacion)
+admin.site.register(Comentario)
+admin.site.register(Like)
+admin.site.register(SolicitudEntrenador)
+admin.site.register(Reto)
+admin.site.register(ParticipacionReto)
+admin.site.register(Notificacion)
+admin.site.register(ProgresoMeta)
+admin.site.register(MetaUsuario)
+admin.site.register(SolicitudEntrenamiento)
+admin.site.register(MensajePrivado)
+admin.site.register(Entreno)
+admin.site.register(Entrenamiento)

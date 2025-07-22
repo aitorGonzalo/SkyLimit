@@ -1,0 +1,228 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"> <!-- Incluye aquí tu CSS base -->
+   
+    <title>Editar Perfil</title>
+    <style>
+        body {
+            background-color: #dde1e9;
+            color: #1f283e;
+            font-family: 'Barlow', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            margin: auto;
+            max-width: 600px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 100px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        footer {
+            background-color: #151623;
+            color: #797e8e;
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+        }
+        footer .redes a {
+            color: #797e8e;
+            margin: 0 10px;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+        footer .redes a:hover {
+            color: #ff1133;
+        }
+        .contenedor-header{
+            width: 100%;
+            position: fixed;
+            border-bottom: 1px solid #1f283e;
+            background-color: rgba(0,0,0,.7);
+            z-index: 99;
+            padding: 0 20px;
+        }
+        .contenedor-header header{
+            max-width: 1100px;
+            margin: auto;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            color: #fff;
+        }
+        .txtRojo{
+            color:#ff1133;
+        }
+        .contenedor-header header nav a{
+            display: inline-block;
+            text-decoration: none;
+            color: #fff;
+            padding: 5px;
+            text-transform: uppercase;
+        }
+        .contenedor-header header nav a:hover{
+            color: #ff1133;
+        }
+        .contenedor-header header .redes a{
+            text-decoration: none;
+            color: #fff;
+            display: inline-block;
+            padding: 5px 8px;
+        }
+        .contenedor-header header .redes a:hover{
+            color: #ff1133;
+        }
+        .nav-responsive{
+            display: none;
+            font-size: 25px;
+         }
+    </style>
+</head>
+
+<body>
+    <div class="contenedor-header">
+        <header>
+            <h1>Sky<span>Limit</span></h1>
+            <nav id="nav">
+                <a href="{% url 'home' %}#inicio">Inicio</a>
+                <a href="{% url 'home' %}#nosotros">Nosotros</a>
+                <a href="{% url 'home' %}#servicios">Servicios</a>
+                <a href="{% url 'home' %}#galeria">Galería</a>
+                <a href="{% url 'home' %}#equipo">Equipo</a>
+                <a href="{% url 'home' %}#contacto">Contacto</a>
+                {% if user.is_authenticated and user.entrenador and user.entrenador.aprobado_por_admin %}
+                    <a href="{% url 'listar_solicitudes_entrenador' %}" class="nav-link position-relative">
+                        <i class="fa-solid fa-envelope"></i> <!-- Ícono de buzón -->
+                        {% with user.entrenador.solicitudes.count as total_solicitudes %}
+                            {% if total_solicitudes > 0 %}
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    {{ total_solicitudes }}
+                                </span>
+                            {% endif %}
+                        {% endwith %}
+                    </a>
+                {% endif %}
+                {% if user.is_staff %}
+                    <a href="{% url 'gestionar_entrenadores' %}" class="nav-link position-relative">
+                        <i class="fa-solid fa-envelope"></i>
+                        {% if solicitudes_pendientes > 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ solicitudes_pendientes }}
+                            </span>
+                        {% endif %}
+                    </a>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <a href="{% url 'ver_perfil' %}">
+                        <img src="{% if user.entrenador and user.entrenador.avatar %}{{ user.entrenador.avatar.url }}
+                                {% elif user.perfilusuario and user.perfilusuario.avatar %}{{ user.perfilusuario.avatar.url }}
+                                {% else %}{% static 'imgs/default-avatar.png' %}{% endif %}" 
+                            alt="Avatar" 
+                            class="rounded-circle" 
+                            style="width: 50px; height: 50px; object-fit: cover;">
+                    </a>
+                    <form action="{% url 'logout' %}" method="POST" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger text-white shadow-none">Log Out</button>
+                    </form>
+                {% else %}
+                    <button type="button" class="btn btn-danger text-white shadow-none" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        Iniciar Sesión
+                    </button>
+                {% endif %}
+            </nav>
+        </header>
+    </div>
+    
+    <div class="container">
+        <h2 class="text-center mb-4">Editar Perfil Entrenador</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+           <!-- Datos personales -->
+           <h5 class="fw-bold">Datos Personales</h5>
+           <div class="mb-3">
+               <label for="id_nombre" class="form-label">Nombre</label>
+               <input type="text" name="nombre" id="id_nombre" class="form-control" value="{{ entrenador.nombre }}">
+           </div>
+           <div class="mb-3">
+               <label for="id_apellidos" class="form-label">Apellidos</label>
+               <input type="text" name="apellidos" id="id_apellidos" class="form-control" value="{{ entrenador.apellidos }}">
+           </div>
+           <div class="mb-3">
+               <label for="id_genero" class="form-label">Género</label>
+               <select name="genero" id="id_genero" class="form-control">
+                   <option value="Masculino" {% if entrenador.genero == "Masculino" %}selected{% endif %}>Masculino</option>
+                   <option value="Femenino" {% if entrenador.genero == "Femenino" %}selected{% endif %}>Femenino</option>
+                   <option value="Otro" {% if entrenador.genero == "Otro" %}selected{% endif %}>Otro</option>
+               </select>
+           </div>
+           <div class="mb-3">
+               <label for="id_nivel_experiencia" class="form-label">Nivel de Experiencia</label>
+               <select name="nivel_experiencia" id="id_nivel_experiencia" class="form-control">
+                   <option value="Principiante" {% if entrenador.nivel_experiencia == "Principiante" %}selected{% endif %}>Principiante</option>
+                   <option value="Intermedio" {% if entrenador.nivel_experiencia == "Intermedio" %}selected{% endif %}>Intermedio</option>
+                   <option value="Avanzado" {% if entrenador.nivel_experiencia == "Avanzado" %}selected{% endif %}>Avanzado</option>
+               </select>
+           </div>
+            <div class="mb-3">
+                <label for="id_avatar" class="form-label">Subir Nuevo Avatar</label>
+                <input type="file" name="avatar" id="id_avatar" class="form-control">
+                <small class="form-text text-muted">Formatos permitidos: JPG, PNG (máximo 2MB).</small>
+            </div>
+
+           <!-- Información del entrenador -->
+           <h5 class="fw-bold mt-4">Información de Entrenador</h5>
+           <div class="mb-3">
+               <label for="id_especialidades" class="form-label">Especialidades</label>
+               <textarea name="especialidades" id="id_especialidades" class="form-control">{{ entrenador.especialidades }}</textarea>
+           </div>
+           <div class="mb-3">
+               <label for="id_experiencia" class="form-label">Experiencia</label>
+               <textarea name="experiencia" id="id_experiencia" class="form-control">{{ entrenador.experiencia }}</textarea>
+           </div>
+           <div class="mb-3">
+               <label for="id_formacion" class="form-label">Formación</label>
+               <textarea name="formacion" id="id_formacion" class="form-control">{{ entrenador.formacion }}</textarea>
+           </div>
+           <div class="mb-3">
+               <label for="id_plazas_abiertas" class="form-label">Plazas Abiertas</label>
+               <input type="number" name="plazas_abiertas" id="id_plazas_abiertas" class="form-control" value="{{ entrenador.plazas_abiertas }}">
+           </div>
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-danger w-100 me-2">Guardar</button>
+                <a href="{% url 'ver_perfil_entrenador' %}" class="btn btn-danger w-100 me-2">Cancelar</a>
+            </div>
+        </form>
+    </div>
+    
+    <footer>
+        <div class="info">
+            <p>&copy; 2025 SkyLimit. Todos los derechos reservados.</p>
+            <div class="redes">
+                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#"><i class="fa-brands fa-youtube"></i></a>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

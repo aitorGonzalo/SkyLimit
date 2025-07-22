@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Usuarios que Entrenas - SkyLimit{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column min-vh-100">
+    <main class="flex-grow-1">
+        <div class="container mt-7 pt-5">
+            <h1 class="text-center fw-bold text-danger">
+                <i class="fas fa-dumbbell"></i> Usuarios que estás Entrenando
+            </h1>
+
+            {% if usuarios_entrenados %}
+                <div class="card shadow-lg border-0 mt-4 p-3">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover">
+                            <thead class="bg-danger text-light">
+                                <tr>
+                                    <th>Avatar</th>
+                                    <th>Usuario</th>
+                                    <th>Email</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entrenamiento in usuarios_entrenados %}
+                                <tr class="border-bottom">
+                                    <td class="text-center">
+                                        <img src="{% if entrenamiento.usuario.perfilusuario.avatar %}{{ entrenamiento.usuario.perfilusuario.avatar.url }}{% else %}{% static 'imgs/default-avatar.png' %}{% endif %}"
+                                             class="rounded-circle img-fluid shadow-sm"
+                                             alt="{{ entrenamiento.usuario.username }}"
+                                             style="width: 80px; height: 80px; object-fit: cover;">
+                                    </td>
+                                    <td class="fw-bold text-dark">{{ entrenamiento.usuario.username }}</td>
+                                    <td class="text-muted">{{ entrenamiento.usuario.email }}</td>
+                                    <td class="text-center">
+                                        <form method="POST" action="{% url 'eliminar_usuario_entrenado' entrenamiento.id %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                <i class="fas fa-user-times"></i> Eliminar
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center mt-5">
+                    <p class="text-muted mt-3 fs-5">No tienes usuarios entrenando actualmente.</p>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+
+<style>
+    .mt-7 {
+        margin-top: 6rem !important;
+    }
+    .pt-5 {
+        padding-top: 3rem !important;
+    }
+
+    /* 🔥 Tarjeta envolvente */
+    .card {
+        border-radius: 15px;
+        background: #ffffff;
+        transition: transform 0.3s ease-in-out;
+    }
+    
+    .card:hover {
+        transform: scale(1.02);
+    }
+
+    /* 🔥 Tabla estilizada */
+    .table {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    thead {
+        border-radius: 15px;
+    }
+
+    /* 🔥 Mejor estilo de scroll */
+    .table-responsive {
+        max-height: 500px;
+        overflow-y: auto;
+        border-radius: 15px;
+    }
+
+    .table-responsive::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #dc3545;
+        border-radius: 10px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+    
+    /* 🔥 Botón de eliminar estilizado */
+    .btn-outline-danger {
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-danger:hover {
+        background: #dc3545;
+        color: #fff;
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}

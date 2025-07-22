@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mapa Interactivo de España - SkyLimit{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column min-vh-100">
+    <main class="flex-grow-1">
+        <div class="container map-container">
+            <h2 class="text-center fw-bold text-dark mb-4">
+                🌍 Chequea las condiciones en diferentes zonas para practicar tu deporte
+            </h2>
+
+            <!-- 📌 Contenedor del Mapa -->
+            <div id="map"></div>
+
+            <!-- ❌ Eliminamos la caja de información -->
+        </div>
+    </main>
+</div>
+
+<!-- 🔹 Cargar Leaflet.js para el Mapa -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+<!-- 🔥 Estilos mejorados -->
+<style>
+    /* 🔹 Ajuste general */
+    .d-flex {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    main {
+        flex-grow: 1;
+    }
+
+    /* 🔹 Contenedor principal */
+    .map-container {
+        margin-top: 100px !important;
+        padding: 40px;
+        text-align: center;
+    }
+
+    /* 🔹 Mapa estilizado */
+    #map {
+        height: 550px;
+        width: 100%;
+        border-radius: 12px;
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease-in-out;
+    }
+
+    #map:hover {
+        transform: scale(1.01);
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let map = L.map('map').setView([40.4168, -3.7038], 6); // 📌 Madrid como centro
+    
+        L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://opentopomap.org/">OpenTopoMap</a> contributors'
+        }).addTo(map);
+    
+        let currentMarker = null;
+    
+        map.on('click', async function(e) {
+            const lat = e.latlng.lat.toFixed(4);
+            const lon = e.latlng.lng.toFixed(4);
+    
+            console.log(`📍 Coordenadas clickeadas: Lat: ${lat}, Lon: ${lon}`);
+    
+            if (currentMarker) {
+                map.removeLayer(currentMarker);
+            }
+    
+            let customIcon = L.icon({
+                iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+                iconSize: [35, 35],
+                iconAnchor: [17, 34]
+            });
+    
+            currentMarker = L.marker([lat, lon], { icon: customIcon })
+                .addTo(map)
+                .bindPopup(`<b>📍 Coordenadas:</b><br>Lat: ${lat}<br>Lng: ${lon}`)
+                .openPopup();
+    
+            // 📌 Comprobamos si es agua o tierra
+            const isWater = await checkIfWater(lat, lon);
+            console.log(`🧐 ¿Es agua? ${isWater ? "Sí 🌊" : "No 🌍"}`);
+    
+            if (isWater) {
+                console.log("🔵 Redirigiendo a /oleaje/");
+                window.location.href = `/oleaje/${lat}/${lon}/`;
+            } else {
+                console.log("🟢 Redirigiendo a /clima/");
+                window.location.href = `/clima/${lat}/${lon}/`;
+            }
+        });
+    
+        async function checkIfWater(lat, lon) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10`);
+                const data = await response.json();
+    
+                console.log("📡 Respuesta de Nominatim API:", data);
+    
+                // 📌 Si Nominatim devuelve un error, asumimos que es agua
+                if (data.error) {
+                    console.log("🌊 No se pudo geolocalizar. Asumiendo que es agua.");
+                    return true;
+                }
+    
+                if (data.address) {
+                    console.log("📍 Dirección detectada:", data.address);
+    
+                    if (data.address.ocean || data.address.water || data.address.sea) {
+                        console.log("🌊 Detectado en un cuerpo de agua.");
+                        return true;
+                    }
+                }
+    
+                console.log("🌍 No se detectó agua en la ubicación.");
+                return false;
+            } catch (error) {
+                console.error("❌ Error comprobando si es agua:", error);
+                return false;
+            }
+        }
+    });
+    
+    
+</script>
+
+{% endblock %}

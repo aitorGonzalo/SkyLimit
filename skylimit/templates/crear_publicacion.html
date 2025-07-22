@@ -1,0 +1,32 @@
+
+<style>
+    .back-button {
+        margin-bottom: 20px;
+    }
+
+    .back-button a {
+        color: #007bff;
+        text-decoration: none;
+        font-size: 1.2rem;
+    }
+
+    .back-button a:hover {
+        color: #0056b3;
+        text-decoration: underline;
+    }
+</style>
+{% extends 'social_base.html' %}
+
+{% block social_content %}
+<div class="back-button">
+    <a href="{% url 'social_home'%}">&larr; Volver</a>
+</div>
+<div class="container mt-5">
+    <h2 class="mb-4">Crear Publicación</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Publicar</button>
+    </form>
+</div>
+{% endblock %}

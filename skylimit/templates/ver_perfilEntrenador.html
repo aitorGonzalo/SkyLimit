@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Ver Perfil Entrenador{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #000 !important;
+        color: #fff;
+    }
+    .card {
+        background-color: #1c1c1e;
+        color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+    .btn-danger {
+        background-color: #ff1133;
+        border: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card shadow-lg" style="max-width: 600px; width: 100%; margin-top: 120px">
+        <div class="card-body text-center">
+            <img src="{% if entrenador.avatar %}{{ entrenador.avatar.url }}{% else %}{% static 'imgs/default-avatar.png' %}{% endif %}" 
+                 alt="Avatar" 
+                 class="rounded-circle mb-3" 
+                 style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #fff;">
+            <h3 class="mb-3">{{ entrenador.nombre }} {{ entrenador.apellidos }}</h3>
+            <p class="text-muted mb-3"><strong>Usuario:</strong> {{ entrenador.user }}</p>
+            <p><strong>Género:</strong> {{ entrenador.genero }}</p>
+            <p><strong>Nivel de Experiencia:</strong> {{ entrenador.nivel_experiencia }}</p>
+            <hr class="my-4">
+            <p><strong>Especialidades:</strong> {{ entrenador.especialidades }}</p>
+            <p><strong>Experiencia:</strong> {{ entrenador.experiencia }}</p>
+            <p><strong>Formación:</strong> {{ entrenador.formacion }}</p>
+            <p><strong>Plazas Abiertas:</strong> {{ entrenador.plazas_abiertas }}</p>
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <a href="{% url 'editar_perfilEntrenador' %}" class="btn btn-danger text-white shadow-none">Editar Perfil</a>
+                <a href="{% url 'home' %}" class="btn btn-danger text-white shadow-none">Volver</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

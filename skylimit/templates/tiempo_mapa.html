@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Condiciones Climáticas - SkyLimit{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column min-vh-100">
+    <main class="flex-grow-1 d-flex align-items-center justify-content-center">
+        <div class="weather-container text-center p-4 p-md-5">
+            <h2 class="display-4 fw-bold text-primary mb-4 animate__animated animate__fadeInDown">🌤️ Condiciones Climáticas</h2>
+
+            <h4 class="text-muted mb-4 animate__animated animate__fadeIn">
+                📍 {{ lugar }}
+            </h4>
+
+            {% if weather.error %}
+                <p class="text-danger animate__animated animate__shakeX">❌ Error: {{ weather.error }}</p>
+            {% else %}
+                <div class="weather-info animate__animated animate__fadeInUp">
+                    <div class="weather-icon mb-3">
+                        {% if weather.weather.0.icon %}
+                            <img src="https://openweathermap.org/img/wn/{{ weather.weather.0.icon }}@4x.png" alt="Icono Clima" class="img-fluid">
+                        {% endif %}
+                    </div>
+                    <div class="weather-details">
+                        <p class="fs-5"><b>Clima:</b> {{ weather.weather.0.description|title }}</p>
+                        <p class="fs-5"><b>Temperatura:</b> {{ weather.main.temp }}°C</p>
+                        <p class="fs-5"><b>Viento:</b> {{ weather.wind.speed }} m/s</p>
+                        <p class="fs-5"><b>Humedad:</b> {{ weather.main.humidity }}%</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="mt-5 animate__animated animate__fadeIn">
+                <a href="{% url 'mapa' %}" class="btn btn-lg btn-outline-danger">🔙 Volver al Mapa</a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    /* Estilos generales */
+    body {
+        background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .weather-container {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        max-width: 600px;
+        width: 100%;
+        margin-bottom: -105px; 
+        height:650px;
+    }
+
+    .weather-info {
+        margin-top: 1.5rem;
+    }
+
+    .weather-icon img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .weather-details p {
+        margin: 0.5rem 0;
+        color: #333;
+    }
+
+    .btn-outline-primary {
+        border: 2px solid;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background:rgb(252, 35, 7);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Animaciones */
+    .animate__animated {
+        animation-duration: 1s;
+    }
+
+    .animate__fadeInDown {
+        animation-name: fadeInDown;
+    }
+
+    .animate__fadeIn {
+        animation-name: fadeIn;
+    }
+
+    .animate__fadeInUp {
+        animation-name: fadeInUp;
+    }
+
+    .animate__shakeX {
+        animation-name: shakeX;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes shakeX {
+        from, to {
+            transform: translateX(0);
+        }
+        10%, 30%, 50%, 70%, 90% {
+            transform: translateX(-10px);
+        }
+        20%, 40%, 60%, 80% {
+            transform: translateX(10px);
+        }
+    }
+</style>
+
+<!-- Incluir la librería de animaciones -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+{% endblock %}

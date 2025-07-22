@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SkyLimit - Comunidad{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"> <!--hace mas peque todo-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- jQuery, Popper.js, and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+    <style>
+        /* Fuentes generales */
+        body {
+            font-family: 'Barlow', sans-serif;
+            background-color: #f4f7fa;
+            color: #343a40;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center; /* Centrar contenido verticalmente */
+            gap: 10px; /* Espaciado entre icono y texto */
+        }
+        
+        .nav-link .badge {
+            margin-left: auto; /* Empuja la notificación al final */
+            font-size: 0.9rem; /* Ajusta el tamaño de la notificación */
+            height: 20px; /* Asegura una altura uniforme */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Barra lateral */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 250px;
+            background-color: #000000;
+            color: white;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        nav h2 {
+            font-size: 24px;
+            color: #ff1133;
+            text-align: center;
+            padding: 20px 0;
+            font-weight: bold;
+        }
+
+        nav .nav-link {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 6px;
+            transition: all 0.3s ease-in-out;
+            color: #e8e8e8;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        nav .nav-link:hover {
+            background-color: #343a40;
+            color: #ffffff;
+        }
+
+        nav .nav-item:not(:last-child) {
+            margin-bottom: 10px;
+        }
+
+      /* Contenido principal */
+        main {
+            margin-left: 250px; /* Igual al ancho de la barra lateral */
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            padding-left: 10px;
+            flex-grow: 1;
+            min-height: 100vh; /* Asegura que ocupe toda la pantalla */
+            box-shadow: inset 0px 4px 8px rgba(0, 0, 0, 0.05);
+            border-top-left-radius: 20px;
+            width: 100%; /* Se asegura de que ocupe todo el espacio disponible */
+        }
+
+        main h1 {
+            font-size: 28px;
+            color: #222831;
+            margin-bottom: 20px;
+        }
+
+        main p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #6c757d;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #000000;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: auto;
+        }
+
+        footer .info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        footer .info p {
+            margin: 0;
+            padding-bottom: 10px;
+            font-size: 14px;
+        }
+
+        footer .redes {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        footer .redes a {
+            margin: 0;
+            color: white;
+            font-size: 20px;
+            transition: color 0.3s ease;
+        }
+
+        footer .redes a:hover {
+            color: #ff1133;
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            nav {
+                position: fixed;
+                left: -100%; /* Lo oculta fuera de la pantalla */
+                width: 250px;
+                height: 100vh;
+                background-color: #000000;
+                transition: left 0.3s ease-in-out;
+                z-index: 999;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+            }
+        
+            /* 🔥 Mostrar el menú cuando está activo */
+            nav.active {
+                left: 0;
+            }
+        
+            /* 🔥 Botón de menú hamburguesa */
+            .menu-toggle {
+                position: fixed;
+                top: 15px;
+                left: 15px;
+                background-color:rgb(8, 73, 250);
+                color: white;
+                padding: 10px 15px;
+                border-radius: 5px;
+                border: none;
+                cursor: pointer;
+                z-index: 1000;
+            }
+        
+            /* 🔥 Ajuste del contenido principal */
+            main {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+        
+            /* 🔥 Ajustes del footer */
+            footer {
+                text-align: center;
+                padding: 15px 10px;
+            }
+        
+            footer .redes {
+                justify-content: center;
+            }
+        
+            /* 🔥 Ocultar el título en la barra lateral en móviles */
+            nav h2 {
+                display: none;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+<div class="d-flex" style="width: 100%; height: 100vh;">
+    <button class="menu-toggle">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+    <!-- Barra Lateral -->
+    <nav>
+        <h2><span style="color:rgb(7, 131, 240);">Sky</span><span style="color:rgb(7, 131, 240);">Limit</span></h2>
+        <ul class="nav flex-column mt-4">
+            <li class="nav-item">
+                <a href="{% url 'home' %}" class="nav-link"><i class="fa-solid fa-arrow-left"></i> Volver a la Web</a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'social_home' %}" class="nav-link"><i class="fa-solid fa-house"></i> Inicio Comunidad</a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'listar_grupos' %}" class="nav-link d-flex align-items-center">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Grupos</span>
+                    {% if notificaciones_grupos > 0 %}
+                        <span class="badge bg-danger ms-auto">{{ notificaciones_grupos }}</span>
+                    {% endif %}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'mensajes_directos' %}" class="nav-link d-flex align-items-center">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>DM</span>
+                    {% if notificaciones_directos > 0 %}
+                        <span class="badge bg-danger ms-auto">{{ notificaciones_directos }}</span>
+                    {% endif %}
+                </a>
+            </li>
+                     
+            <li class="nav-item">
+                <a href="{% url 'calendar' %}" class="nav-link"><i class="fa-solid fa-calendar"></i> Actividades</a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'listar_retos' %}" class="nav-link"><i class="fa-solid fa-trophy"></i> Retos</a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="{% url 'mi_perfil' %}" class="nav-link"><i class="fa-solid fa-user"></i> Mi Perfil</a>
+            </li>
+        </ul>
+    </nav>
+    
+
+    <!-- Contenido Principal -->
+    <main>
+        {% block social_content %}
+        <!-- Aquí se cargará el contenido dinámico -->
+        <h1>Bienvenido a la Comunidad SkyLimit</h1>
+        <p>Explora las funcionalidades de la comunidad, únete a grupos temáticos y conecta con otros usuarios.</p>
+        {% endblock %}
+    </main>
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="info">
+        <p>&copy; 2025 SkyLimit. Todos los derechos reservados.</p>
+        <div class="redes">
+            <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#"><i class="fa-brands fa-twitter"></i></a>
+            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#"><i class="fa-brands fa-youtube"></i></a>
+        </div>
+    </div>
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const menuToggle = document.querySelector(".menu-toggle");
+        const nav = document.querySelector("nav");
+
+        menuToggle.addEventListener("click", function () {
+            nav.classList.toggle("active");
+        });
+
+        // Cerrar menú si se hace clic fuera
+        document.addEventListener("click", function (event) {
+            if (!nav.contains(event.target) && !menuToggle.contains(event.target)) {
+                nav.classList.remove("active");
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

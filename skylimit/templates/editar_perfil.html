@@ -1,0 +1,187 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"> <!-- Incluye aquí tu CSS base -->
+   
+    <title>Editar Perfil</title>
+    <style>
+        body {
+            background-color: #dde1e9;
+            color: #1f283e;
+            font-family: 'Barlow', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            margin: auto;
+            max-width: 600px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 100px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        footer {
+            background-color: #151623;
+            color: #797e8e;
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+        }
+        footer .redes a {
+            color: #797e8e;
+            margin: 0 10px;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+        footer .redes a:hover {
+            color: #ff1133;
+        }
+        .contenedor-header{
+            width: 100%;
+            position: fixed;
+            border-bottom: 1px solid #1f283e;
+            background-color: rgba(0,0,0,.7);
+            z-index: 99;
+            padding: 0 20px;
+        }
+        .contenedor-header header{
+            max-width: 1100px;
+            margin: auto;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            color: #fff;
+        }
+        .txtRojo{
+            color:#ff1133;
+        }
+        .contenedor-header header nav a{
+            display: inline-block;
+            text-decoration: none;
+            color: #fff;
+            padding: 5px;
+            text-transform: uppercase;
+        }
+        .contenedor-header header nav a:hover{
+            color: #ff1133;
+        }
+        .contenedor-header header .redes a{
+            text-decoration: none;
+            color: #fff;
+            display: inline-block;
+            padding: 5px 8px;
+        }
+        .contenedor-header header .redes a:hover{
+            color: #ff1133;
+        }
+        .nav-responsive{
+            display: none;
+            font-size: 25px;
+         }
+    </style>
+</head>
+
+<body>
+    <div class="contenedor-header">
+        <header>
+            <h1>Sky<span>Limit</span></h1>
+            <nav id="nav">
+                <a href="{% url 'home' %}#inicio">Inicio</a>
+                <a href="{% url 'home' %}#nosotros">Nosotros</a>
+                <a href="{% url 'home' %}#servicios">Servicios</a>
+                <a href="{% url 'home' %}#galeria">Galería</a>
+                <a href="{% url 'home' %}#equipo">Equipo</a>
+                <a href="{% url 'home' %}#contacto">Contacto</a>
+                {% if user.is_authenticated and user.entrenador and user.entrenador.aprobado_por_admin %}
+                    <a href="{% url 'listar_solicitudes_entrenador' %}" class="nav-link position-relative">
+                        <i class="fa-solid fa-envelope"></i> <!-- Ícono de buzón -->
+                        {% with user.entrenador.solicitudes.count as total_solicitudes %}
+                            {% if total_solicitudes > 0 %}
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    {{ total_solicitudes }}
+                                </span>
+                            {% endif %}
+                        {% endwith %}
+                    </a>
+                {% endif %}
+                {% if user.is_staff %}
+                    <a href="{% url 'gestionar_entrenadores' %}" class="nav-link position-relative">
+                        <i class="fa-solid fa-envelope"></i> <!-- Ícono de buzón -->
+                        {% if solicitudes_pendientes > 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ solicitudes_pendientes }}
+                            </span>
+                        {% endif %}
+    
+                    </a>
+                {% endif %}
+    
+                {% if user.is_authenticated %}
+                    <a href="{% url 'ver_perfil' %}">
+                        <img src="{% if user.entrenador and user.entrenador.avatar %}{{ user.entrenador.avatar.url }}
+                                {% elif user.perfilusuario and user.perfilusuario.avatar %}{{ user.perfilusuario.avatar.url }}
+                                {% else %}{% static 'imgs/default-avatar.png' %}{% endif %}" 
+                            alt="Avatar" 
+                            class="rounded-circle" 
+                            style="width: 50px; height: 50px; object-fit: cover;">
+                    </a>
+                    <form action="{% url 'logout' %}" method="POST" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger text-white shadow-none">Log Out</button>
+                    </form>
+                {% else %}
+                    <button type="button" class="btn btn-danger text-white shadow-none" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        Iniciar Sesión
+                    </button>
+                {% endif %}
+               
+    
+    
+            </nav>
+            
+        </header>
+    </div>
+    
+
+    <div class="container">
+        <h2>Editar Perfil</h2>
+        <form method="POST" enctype="multipart/form-data" class="p-3">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-danger w-100 me-2">Guardar</button>
+                <a href="{% url 'ver_perfil' %}" class="btn btn-danger w-100 me-2">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+    <footer>
+        <div class="info">
+            <p>&copy; 2025 SkyLimit. Todos los derechos reservados.</p>
+            <div class="redes">
+                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#"><i class="fa-brands fa-youtube"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

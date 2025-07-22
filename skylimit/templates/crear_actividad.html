@@ -1,0 +1,54 @@
+<style>
+    .back-button {
+        margin-bottom: 20px;
+    }
+
+    .back-button a {
+        color: #007bff;
+        text-decoration: none;
+        font-size: 1.2rem;
+    }
+
+    .back-button a:hover {
+        color: #0056b3;
+        text-decoration: underline;
+    }
+</style>
+{% extends 'social_base.html' %}
+{% load static %}
+{% block social_content %}
+<div class="back-button">
+    <a href="{% url 'calendar'%}">&larr; Volver</a>
+</div>
+<div class="container-fluid d-flex justify-content-center align-items-center" style="min-height: 90vh; padding-left: 0; padding-right: 0;">
+    <div class="card p-4" style="max-width: 600px; width: 100%; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
+        <h1 class="text-center mb-4">Crear Nueva Actividad</h1>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Errores generales del formulario -->
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ form.non_field_errors|join:", " }}
+            </div>
+            {% endif %}
+
+            <!-- Campos del formulario -->
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <div class="text-danger">
+                    {{ field.errors|join:", " }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <!-- Botón de envío -->
+            <button type="submit" class="btn btn-primary w-100 py-2">Crear Actividad</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

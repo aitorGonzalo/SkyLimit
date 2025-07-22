@@ -1,0 +1,152 @@
+{% extends 'social_base.html' %}
+{% load static %}
+{% block social_content %}
+<div class="back-button">
+    <a href="{% url 'mensajes_directos' %}">&larr; Volver</a>
+</div>
+<div class="container mt-5">
+    <div class="chat-box">
+        <div class="user-header">
+            <img src="{% if otro_usuario.perfilusuario.avatar %}{{ otro_usuario.perfilusuario.avatar.url }}{% else %}{% static 'imgs/default-avatar.png' %}{% endif %}" alt="Avatar">
+            <h1>Conversación con {{ otro_usuario.username }}</h1>
+        </div>
+        
+        <div class="messages d-flex flex-column">
+            {% for mensaje in mensajes %}
+            <div class="mensaje position-relative {% if mensaje.remitente == request.user %}sent{% else %}received{% endif %}">
+                <strong>{{ mensaje.remitente.username }}:</strong> {{ mensaje.contenido }}
+                {% if mensaje.editado %}
+                    <small class="text-muted">(Editado)</small>
+                {% endif %}
+                <div class="text-muted small text-end">{{ mensaje.fecha_envio|date:"d M Y H:i" }}</div>
+                
+                {% if mensaje.remitente == request.user %}
+                <div class="message-options">
+                    <a href="{% url 'editar_mensaje_privado' mensaje.id %}" class="btn btn-sm btn-primary">Editar</a>
+                    <a href="{% url 'eliminar_mensaje_privado' mensaje.id %}" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que quieres eliminar este mensaje?');">Eliminar</a>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        
+        <form method="POST" class="mt-4">
+            {% csrf_token %}
+            <div class="input-group">
+                <textarea name="contenido" class="form-control" placeholder="Escribe tu mensaje aquí..." required></textarea>
+                <button type="submit" class="btn btn-primary">Enviar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .chat-box {
+        border: 1px solid #ccc;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .messages {
+        max-height: 550px;
+        overflow-y: auto;
+        margin-bottom: 15px;
+    }
+
+    .mensaje {
+        padding: 10px;
+        border-radius: 10px;
+        margin: 10px 0;
+        position: relative;
+        transition: background-color 0.3s ease;
+    }
+
+    .mensaje.sent {
+        background-color: rgb(24, 216, 246);
+        color: white;
+        align-self: flex-end;
+    }
+
+    .mensaje.received {
+        background-color:rgb(232, 233, 234);
+        color: #212529;
+        align-self: flex-start;
+    }
+
+
+    .message-options {
+        display: none;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        z-index: 10;
+        padding: 5px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .mensaje:hover .message-options {
+        display: block;
+    }
+
+    .user-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .user-header img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .user-header h1 {
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+    .input-group textarea {
+        resize: none;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        padding: 10px;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-sm {
+        margin: 0 2px;
+    }
+      /* Botón de volver */
+      .back-button {
+        margin-bottom: 20px;
+    }
+
+    .back-button a {
+        color: #007bff;
+        text-decoration: none;
+        font-size: 1.2rem;
+    }
+
+    .back-button a:hover {
+        color: #0056b3;
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}

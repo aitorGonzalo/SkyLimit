@@ -1,0 +1,205 @@
+{% extends 'social_base.html' %}
+{% block social_content %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario de Actividades</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden; /* Evita el scroll horizontal */
+            background: #f8f9fa;
+        }
+
+        main {
+            flex-grow: 1;
+        }
+
+        .container {
+            max-width: 100%;
+            overflow-x: auto; /* Hace el contenedor deslizante */
+            padding: 20px;
+        }
+
+        .ul-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            padding: 0;
+            list-style: none;
+            margin: 0 auto;
+        }
+
+        .li-calendar {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+            min-height: 100px;
+        }
+
+        .li-calendar:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Día actual: verde suave */
+        .li-calendar.today {
+            background:rgb(40, 247, 60); /* Verde suave */
+            color: white;
+        }
+
+        /* Días con actividades: azul suave */
+        .li-calendar.has-activities {
+            background:rgb(50, 155, 248); /* Azul suave */
+            color: white;
+        }
+
+        .li-calendar time {
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        .li-calendar small {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .li-calendar span {
+            margin-top: 5px;
+            font-size: 0.8rem;
+            color: #ffffff;
+        }
+
+        @media (max-width: 768px) {
+            .ul-calendar {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .li-calendar time {
+                font-size: 1.2rem;
+            }
+
+            .li-calendar small, .li-calendar span {
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .ul-calendar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .btn-primary, .btn-outline-primary {
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover, .btn-outline-primary:hover {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            color: #343a40;
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #4776E6, #8E54E9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .text-center.mb-4 {
+            margin-bottom: 2rem;
+        }
+
+        .create-activity-btn {
+            display: inline-block;
+            font-size: 1.1rem;
+            padding: 12px 25px;
+            color: #fff;
+            background: linear-gradient(to right, #4776E6, #8E54E9);
+            border: none;
+            border-radius: 12px;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            margin: 10px auto 20px auto; /* Centra el botón */
+            width: fit-content; /* Ajusta el ancho al contenido */
+        }
+
+        .create-activity-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header del calendario -->
+        <div class="text-center mb-4">
+            <h1 class="fw-bold">Calendario de Actividades</h1>
+            <!-- Botón Crear Actividad debajo del título -->
+            <a href="{% url 'crear_actividad' %}" class="create-activity-btn">Crear Actividad</a>
+        </div>
+
+        <!-- Controles del calendario -->
+        <div class="control-buttons">
+            <a href="{% url 'calendar' prev_year prev_month %}" class="btn btn-outline-primary">
+                <i class="fa-solid fa-arrow-left"></i> Mes Anterior
+            </a>
+            <h2>{{ month_name }} {{ year }}</h2>
+            <a href="{% url 'calendar' next_year next_month %}" class="btn btn-outline-primary">
+                Mes Siguiente <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- Calendario -->
+        <div class="row justify-content-center">
+            <ul class="ul-calendar">
+                {% for day in days_with_events %}
+                <li class="li-calendar {% if day.is_today %}today{% endif %} {% if day.event > 0 %}has-activities{% endif %}">
+                    <a href="{% url 'day_events_view' year month day.day %}" class="text-decoration-none">
+                        {% if day.day %}
+                        <time datetime="{{ year }}-{{ month|stringformat:'02d' }}-{{ day.day|stringformat:'02d' }}">
+                            {{ day.day }}
+                        </time>
+                        <small>{{ day.day_name }}</small>
+                        {% endif %}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}
