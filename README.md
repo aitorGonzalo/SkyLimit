@@ -39,18 +39,6 @@ El proyecto está orientado tanto a personas que buscan mejorar su salud como a 
     🧬 Integración con APIs externas basadas en IA
     Recomendación de ejercicios, traducción de contenido y adaptación inteligente al nivel del usuario.
 
-🛠️ Tecnologías utilizadas
-
-    Android Studio – Desarrollo de la app nativa
-
-    Java / Kotlin – Lenguajes principales
-
-    APIs externas con IA – Motores de recomendación, clima, traductores
-
-    SQLite / Firebase / MySQL – Gestión de datos (según implementación)
-
-    Diseño responsivo – Optimizado para dispositivos Android
-
 👨‍🎓 Autor
 
 Aitor Gonzalo González
