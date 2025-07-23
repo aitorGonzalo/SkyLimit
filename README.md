@@ -65,3 +65,43 @@ SkyLimit busca ir más allá del simple registro de actividad, construyendo una 
 
 Puedes descargar la memoria completa del proyecto desde este enlace:  
 [Descargar Memoria SkyLimit (PDF)](https://drive.google.com/file/d/1D9bjyhW6tgHBdRSGxDxrHQT3bHjIbUti/view?usp=drive_link)
+
+## Prerrequisitos
+
+- Python 3.x instalado
+- `pip` instalado (normalmente incluido con Python)
+- Virtualenv (opcional pero recomendado)
+
+## Instrucciones de instalación y ejecución
+
+### 1. Crear un entorno virtual
+
+Es altamente recomendable usar un entorno virtual para evitar conflictos entre dependencias. Sigue los pasos según tu sistema operativo:
+
+#### En Linux/MacOS:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Instalar dependencias
+
+Con el entorno virtual activado, instala las dependencias necesarias ejecutando:
+
+```bash
+pip install -r requirements.txt e insertar el backup de la base de datos en postgress local
+```
+
+### 4. Ejecutar la aplicación
+
+Después de instalar las dependencias, inicia el servidor local con el siguiente comando:
+
+```bash
+python manage.py runserver
+```
+
+### 5. Acceder a la aplicación
+
+Abre tu navegador web y accede a la siguiente URL:
+
+[http://localhost:8000](http://localhost:8000)
