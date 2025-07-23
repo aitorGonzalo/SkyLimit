@@ -73,7 +73,7 @@ Puedes descargar la memoria completa del proyecto desde este enlace:
 - Virtualenv (opcional pero recomendado)
 
 ## Instrucciones de instalación y ejecución
-
+git clone https://github.com/aitorGonzalo/SkyLimit
 ### 1. Crear un entorno virtual
 
 Es altamente recomendable usar un entorno virtual para evitar conflictos entre dependencias. Sigue los pasos según tu sistema operativo:
