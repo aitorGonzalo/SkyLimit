@@ -89,7 +89,13 @@ source venv/bin/activate
 Con el entorno virtual activado, instala las dependencias necesarias ejecutando:
 
 ```bash
-pip install -r requirements.txt e insertar el backup de la base de datos en postgress local
+pip install -r requirements.txt
+Aplica las migraciones
+
+python manage.py migrate
+Restaura datos con el backup
+
+python manage.py loaddata backup.json
 ```
 
 ### 4. Ejecutar la aplicación
