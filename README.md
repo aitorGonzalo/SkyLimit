@@ -68,6 +68,7 @@ Puedes descargar la memoria completa del proyecto desde este enlace:
 
 ## Prerrequisitos
 
+- Esta pensado para funcionar correctamente en ubuntu(Linux), en windows no se probó.
 - Python 3.x instalado
 - `pip` instalado (normalmente incluido con Python)
 - Virtualenv (opcional pero recomendado)
